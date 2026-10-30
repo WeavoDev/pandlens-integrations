@@ -26,10 +26,10 @@ Customers can self-serve a free key at [pandlens.nl/en/signup](https://pandlens.
 node --test shared/test/*.test.js
 
 # Zapier
-cd zapier && npm ci && npm test && npx zapier validate
+cd zapier && npm install && npm test && npx zapier validate
 
 # n8n
-cd n8n && npm ci && npm run lint && npm run build && npm test && npm run scan
+cd n8n && npm install && npm run lint && npm run build && npm test && npm run scan
 ```
 
 CI runs on [Woodpecker](https://ci.daan.gg) (`.woodpecker.yml`). The only GitHub Actions workflow publishes the n8n package to npm with provenance when a tag is pushed (requires `NPM_TOKEN`).
