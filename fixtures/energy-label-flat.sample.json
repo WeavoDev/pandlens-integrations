@@ -1,0 +1,13 @@
+{
+  "energyLabel_registrationId": "849201948",
+  "energyLabel_labelClass": "A",
+  "energyLabel_recordingDate": "2023-04-12",
+  "energyLabel_registrationDate": "2023-04-18",
+  "energyLabel_validUntil": "2033-04-12",
+  "energyLabel_calculationMethod": "NTA 8800",
+  "energyLabel_buildingType": "Rijwoning tussen",
+  "energyLabel_constructionYear": 1998,
+  "energyLabel_ep1KwhM2Yr": 74.2,
+  "energyLabel_ep2PrimaryFossilKwhM2Yr": 96.5,
+  "energyLabel_ep3RenewableSharePct": 34.8
+}
