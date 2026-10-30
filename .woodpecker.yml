@@ -14,7 +14,7 @@ steps:
   zapier:
     image: node:22-alpine
     commands:
-      - cd zapier && npm ci
+      - cd zapier && npm install --ignore-scripts
       - cd zapier && npm run lint
       - cd zapier && npm test
       - cd zapier && npx zapier validate
@@ -22,7 +22,7 @@ steps:
   n8n:
     image: node:22-alpine
     commands:
-      - cd n8n && npm ci
+      - cd n8n && npm install --ignore-scripts
       - cd n8n && npm run lint
       - cd n8n && npm run build
       - cd n8n && npm test

@@ -20,7 +20,7 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
       - name: Install and build
         working-directory: n8n
-        run: npm ci && npm run build
+        run: npm install --ignore-scripts && npm run build
       - name: Publish with provenance
         working-directory: n8n
         run: npm publish --provenance --access public
