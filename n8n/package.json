@@ -1,0 +1,52 @@
+{
+  "name": "n8n-nodes-pandlens",
+  "version": "0.1.0",
+  "description": "Community n8n node for the Pandlens Dutch property API (one address per execution).",
+  "license": "MIT",
+  "homepage": "https://github.com/WeavoDev/pandlens-integrations/tree/main/n8n",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/WeavoDev/pandlens-integrations.git",
+    "directory": "n8n"
+  },
+  "keywords": [
+    "n8n-community-node-package",
+    "pandlens",
+    "netherlands",
+    "address",
+    "energy-label",
+    "property"
+  ],
+  "main": "index.js",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "lint": "eslint credentials nodes utils --max-warnings=0",
+    "test": "node --test test/*.test.js",
+    "scan": "node scripts/scan-local.cjs",
+    "dev": "tsc --watch"
+  },
+  "n8n": {
+    "n8nNodesApiVersion": 1,
+    "credentials": [
+      "dist/credentials/PandlensApi.credentials.js"
+    ],
+    "nodes": [
+      "dist/nodes/Pandlens/Pandlens.node.js"
+    ]
+  },
+  "peerDependencies": {
+    "n8n-workflow": "*"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "@typescript-eslint/eslint-plugin": "^8.18.0",
+    "@typescript-eslint/parser": "^8.18.0",
+    "eslint": "^8.57.0",
+    "n8n-workflow": "^1.82.0",
+    "@n8n/scan-community-package": "^0.19.0",
+    "typescript": "^5.7.2"
+  }
+}

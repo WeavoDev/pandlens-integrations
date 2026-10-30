@@ -1,0 +1,29 @@
+---
+when:
+  - event: push
+    branch:
+      - main
+      - cursor/**
+
+steps:
+  shared-tests:
+    image: node:22-bookworm-slim
+    commands:
+      - node --test shared/test/*.test.js
+
+  zapier:
+    image: node:22-bookworm-slim
+    commands:
+      - cd zapier && npm install
+      - cd zapier && npm run lint
+      - cd zapier && npm test
+      - cd zapier && npx zapier validate
+
+  n8n:
+    image: node:22-bookworm-slim
+    commands:
+      - cd n8n && npm install
+      - cd n8n && npm run lint
+      - cd n8n && npm run build
+      - cd n8n && npm test
+      - cd n8n && npm run scan
