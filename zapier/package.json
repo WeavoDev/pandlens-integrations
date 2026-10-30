@@ -1,0 +1,24 @@
+{
+  "name": "pandlens-zapier",
+  "version": "1.0.0",
+  "description": "Pandlens is a Dutch property intelligence API. Look up one address at a time for building facts, registered energy labels, and neighbourhood statistics.",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha --recursive -t 10000 test",
+    "lint": "eslint ."
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "zapier-platform-core": "17.7.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.0",
+    "mocha": "^10.8.2",
+    "nock": "^13.5.6",
+    "should": "^13.2.3",
+    "zapier-platform-cli": "17.7.0"
+  },
+  "private": true
+}
