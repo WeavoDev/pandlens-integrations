@@ -1,0 +1,189 @@
+{
+  "address": {
+    "postcode": "6101DB",
+    "huisnummer": 19,
+    "huisletter": null,
+    "toevoeging": null,
+    "straat": "Markt",
+    "woonplaats": "Echt"
+  },
+  "bag": {
+    "verblijfsobject": {
+      "identificatie": "0951010000041921",
+      "status": "Verblijfsobject in gebruik",
+      "gebruiksdoel": "woonfunctie",
+      "oppervlakteM2": 138,
+      "openbareRuimteNaam": "Markt",
+      "woonplaatsNaam": "Echt"
+    },
+    "pand": {
+      "identificatie": "0951100000031044",
+      "bouwjaar": 1998,
+      "status": "Pand in gebruik",
+      "footprintAreaM2": 84.5
+    }
+  },
+  "energyLabel": {
+    "registrationId": "849201948",
+    "labelClass": "A",
+    "recordingDate": "2023-04-12",
+    "registrationDate": "2023-04-18",
+    "validUntil": "2033-04-12",
+    "calculationMethod": "NTA 8800",
+    "buildingType": "Rijwoning tussen",
+    "constructionYear": 1998,
+    "ep1KwhM2Yr": 74.2,
+    "ep2PrimaryFossilKwhM2Yr": 96.5,
+    "ep3RenewableSharePct": 34.8
+  },
+  "neighbourhood": {
+    "buurtcode": "BU18830000",
+    "wijkcode": "WK188300",
+    "wijknaam": "Echt",
+    "gemeentecode": "GM1883",
+    "gemeentenaam": "Echt-Susteren",
+    "gemiddeldeWozWaardeEur": 318000,
+    "wozPeiljaar": 2024,
+    "buurtWoz": {
+      "series": [
+        {
+          "peiljaar": 2021,
+          "gemiddeldeWozWaardeEur": 261000,
+          "comparable": true
+        },
+        {
+          "peiljaar": 2022,
+          "gemiddeldeWozWaardeEur": 289000,
+          "comparable": true
+        },
+        {
+          "peiljaar": 2023,
+          "gemiddeldeWozWaardeEur": 304000,
+          "comparable": true
+        },
+        {
+          "peiljaar": 2024,
+          "gemiddeldeWozWaardeEur": 318000,
+          "comparable": true
+        }
+      ],
+      "growth": {
+        "oneYearPercent": 4.61,
+        "threeYearPercent": 21.84,
+        "cagrPercent": 6.81
+      }
+    }
+  },
+  "heritage": {
+    "isRijksmonument": false,
+    "rijksmonumentnummer": null,
+    "inBeschermdGezicht": false
+  },
+  "proximity": {
+    "level": "buurt",
+    "buurtcode": "BU18830000",
+    "peiljaar": 2024,
+    "distancesKm": {
+      "huisartsenpraktijk": 0.4,
+      "apotheek": 0.5,
+      "ziekenhuis": 8.2,
+      "groteSupermarkt": 0.3,
+      "kinderdagverblijf": 0.5,
+      "basisonderwijs": 0.6,
+      "voortgezetOnderwijs": 1.1,
+      "opritHoofdverkeersweg": 2.3,
+      "treinstation": 0.9
+    }
+  },
+  "climate": {
+    "level": "buurt",
+    "funderingsrisico": {
+      "paalrotHuidig": {
+        "score": 0,
+        "klasse": "Laag"
+      },
+      "verschilzetting2050Hoog": {
+        "score": 0.1,
+        "klasse": "Laag"
+      }
+    },
+    "hittestress": {
+      "gevoelstemperatuurC": 31.2,
+      "klasse": "Matig",
+      "jaar": 2024
+    }
+  },
+  "noise": {
+    "wegverkeerLdenDb": 47,
+    "klasse": "Matig (45-50 dB)",
+    "jaar": 2024
+  },
+  "plot": {
+    "oppervlakteM2": 195,
+    "verblijfsobjectenOpPerceel": 1,
+    "meerdereVerblijfsobjecten": false
+  },
+  "building3d": {
+    "dakType": "slanted",
+    "maaiveldNapM": 28.4,
+    "dakHoogteMaxNapM": 37.9,
+    "dakHoogteMediaanNapM": 34.2,
+    "nokHoogteNapM": 37.9,
+    "gebouwHoogteM": 9.5,
+    "dakOppervlakPlatM2": 14.2,
+    "dakOppervlakSchuinM2": 72.8,
+    "volumeM3": 412.6,
+    "zonnepanelen": true
+  },
+  "derived": {
+    "property": {
+      "ageYears": {
+        "value": 28,
+        "unit": "years",
+        "status": "computed"
+      },
+      "constructionDecade": {
+        "value": "1990-1999",
+        "status": "computed"
+      },
+      "ageCategory": {
+        "value": "modern_insulated",
+        "status": "computed"
+      }
+    },
+    "energy": {
+      "labelClass": {
+        "value": "A",
+        "status": "observed"
+      },
+      "pandlensNormalizedEnergyScore": {
+        "value": 86,
+        "unit": "score_0_100",
+        "status": "computed"
+      },
+      "relativeToNeighbourhood": {
+        "status": "computed",
+        "medianLabelClass": "B",
+        "betterThanPercentage": 78.4,
+        "sampleSize": 1420
+      }
+    },
+    "woz": {
+      "buurtYoYPercent": {
+        "value": 4.61,
+        "unit": "percent",
+        "status": "computed"
+      },
+      "buurtThreeYearPercent": {
+        "value": 21.84,
+        "unit": "percent",
+        "status": "computed"
+      },
+      "buurtWozPerM2Eur": {
+        "value": 2410,
+        "unit": "EUR/m2",
+        "status": "computed"
+      }
+    }
+  }
+}

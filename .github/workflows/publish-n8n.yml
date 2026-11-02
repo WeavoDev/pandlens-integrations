@@ -1,0 +1,31 @@
+name: Publish n8n community package
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Type publish to run npm publish with provenance'
+        required: true
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  publish:
+    if: github.event.inputs.confirm == 'publish'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          registry-url: 'https://registry.npmjs.org'
+      - name: Install and build
+        working-directory: n8n
+        run: npm ci --ignore-scripts && npm run build
+      - name: Publish with provenance
+        working-directory: n8n
+        run: npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

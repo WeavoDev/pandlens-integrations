@@ -1,0 +1,18 @@
+{
+  "error": "address_ambiguous",
+  "message": "Multiple addresses match this postcode and house number.",
+  "candidates": [
+    {
+      "postcode": "1012JS",
+      "huisnummer": 1,
+      "huisletter": "A",
+      "straat": "Damrak"
+    },
+    {
+      "postcode": "1012JS",
+      "huisnummer": 1,
+      "huisletter": "B",
+      "straat": "Damrak"
+    }
+  ]
+}
