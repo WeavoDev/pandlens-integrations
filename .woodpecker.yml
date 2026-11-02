@@ -6,11 +6,15 @@ steps:
   - name: pandlens-adresgegevens quality
     image: php:8.2-cli
     commands:
-      - apt-get update && apt-get install -y git unzip libzip-dev
+      - apt-get update && apt-get install -y git unzip libzip-dev zip gettext
       - docker-php-ext-install zip
       - curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
       - cd wordpress/pandlens-adresgegevens
       - composer install --no-interaction --prefer-dist
       - find . -path ./vendor -prune -o -name '*.php' -print0 | xargs -0 -n1 php -l
-      - vendor/bin/phpcs
-      - vendor/bin/phpunit
+      - cd ../..
+      - cd wordpress
+      - pandlens-adresgegevens/vendor/bin/phpcs --standard=phpcs.xml.dist
+      - pandlens-adresgegevens/vendor/bin/phpunit -c phpunit.xml.dist
+      - msgfmt -o pandlens-adresgegevens/languages/pandlens-adresgegevens-nl_NL.mo pandlens-adresgegevens/languages/pandlens-adresgegevens-nl_NL.po
+      - bash build-zip.sh

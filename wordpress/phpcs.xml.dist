@@ -2,7 +2,7 @@
 <ruleset name="Pandlens Adresgegevens">
 	<description>WPCS for Pandlens Adresgegevens WordPress plugin.</description>
 
-	<file>.</file>
+	<file>pandlens-adresgegevens</file>
 	<exclude-pattern>*/vendor/*</exclude-pattern>
 	<exclude-pattern>*/node_modules/*</exclude-pattern>
 	<exclude-pattern>*/tests/unit/*</exclude-pattern>

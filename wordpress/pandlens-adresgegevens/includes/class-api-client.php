@@ -40,20 +40,12 @@ class Api_Client {
 	 */
 	public function lookup( string $postcode, string $huisnummer, string $huisletter = '', string $toevoeging = '', bool $enforce_proxy_limit = true ): array {
 		if ( ! $this->settings->has_api_key() ) {
-			throw new Api_Exception(
-				'missing_api_key',
-				__( 'Pandlens API key is not configured.', 'pandlens-adresgegevens' ),
-				503
-			);
+			throw Api_Exception::create( 'missing_api_key', 'Pandlens API key is not configured.', 503 );
 		}
 
 		$parts = $this->normalizer->normalize( $postcode, $huisnummer, $huisletter, $toevoeging );
 		if ( null === $parts ) {
-			throw new Api_Exception(
-				'validation_error',
-				__( 'Enter a valid Dutch postcode and house number.', 'pandlens-adresgegevens' ),
-				400
-			);
+			throw Api_Exception::create( 'validation_error', 'Enter a valid Dutch postcode and house number.', 400 );
 		}
 
 		if ( $enforce_proxy_limit ) {
@@ -104,11 +96,7 @@ class Api_Client {
 	 */
 	public function get_usage(): array {
 		if ( ! $this->settings->has_api_key() ) {
-			throw new Api_Exception(
-				'missing_api_key',
-				__( 'Pandlens API key is not configured.', 'pandlens-adresgegevens' ),
-				503
-			);
+			throw Api_Exception::create( 'missing_api_key', 'Pandlens API key is not configured.', 503 );
 		}
 
 		return $this->request( 'GET', self::API_BASE . '/v1/usage' );
@@ -130,11 +118,7 @@ class Api_Client {
 
 		$result = wp_remote_request( $url, $args );
 		if ( is_wp_error( $result ) ) {
-			throw new Api_Exception(
-				'network_error',
-				__( 'Could not reach Pandlens. Try again later.', 'pandlens-adresgegevens' ),
-				502
-			);
+			throw Api_Exception::create( 'network_error', 'Could not reach Pandlens.', 502 );
 		}
 
 		$status   = (int) wp_remote_retrieve_response_code( $result );
@@ -151,9 +135,9 @@ class Api_Client {
 		}
 
 		if ( 401 === $status ) {
-			throw new Api_Exception(
+			throw Api_Exception::create(
 				'unauthorized',
-				__( 'Invalid Pandlens API key. Get a free key at pandlens.nl/signup.', 'pandlens-adresgegevens' ),
+				'Invalid Pandlens API key.',
 				401,
 				array(
 					'signup_url' => 'https://pandlens.nl/signup',
@@ -162,33 +146,26 @@ class Api_Client {
 		}
 
 		if ( 402 === $status ) {
-			throw Api_Exception::from_response(
-				$status,
-				is_array( $body ) ? $body : null,
-				__( 'Monthly Pandlens lookup quota exceeded.', 'pandlens-adresgegevens' )
-			);
+			$this->throw_from_response( $status, is_array( $body ) ? $body : null, 'Monthly Pandlens lookup quota exceeded.' );
 		}
 
 		if ( 404 === $status && is_array( $body ) ) {
-			throw Api_Exception::from_response(
-				$status,
-				$body,
-				__( 'Address not found.', 'pandlens-adresgegevens' )
-			);
+			$this->throw_from_response( $status, $body, 'Address not found.' );
 		}
 
 		if ( 429 === $status ) {
-			throw Api_Exception::from_response(
-				$status,
-				is_array( $body ) ? $body : null,
-				__( 'Pandlens rate limit exceeded. Please wait and try again.', 'pandlens-adresgegevens' )
-			);
+			$this->throw_from_response( $status, is_array( $body ) ? $body : null, 'Pandlens rate limit exceeded.' );
 		}
 
-		throw Api_Exception::from_response(
-			$status,
-			is_array( $body ) ? $body : null,
-			__( 'Unexpected Pandlens API response.', 'pandlens-adresgegevens' )
-		);
+		$this->throw_from_response( $status, is_array( $body ) ? $body : null, 'Unexpected Pandlens API response.' );
+	}
+
+	/**
+	 * @param array<string, mixed>|null $body
+	 * @throws Api_Exception
+	 */
+	private function throw_from_response( int $status, ?array $body, string $fallback ): void {
+		// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Localized at REST/AJAX boundaries.
+		throw Api_Exception::from_response( $status, $body, $fallback );
 	}
 }

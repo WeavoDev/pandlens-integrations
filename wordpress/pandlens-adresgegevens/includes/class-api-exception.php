@@ -22,11 +22,20 @@ class Api_Exception extends \Exception {
 	/**
 	 * @param array<string, mixed> $context
 	 */
-	public function __construct( string $error_slug, string $message, int $http_status = 400, array $context = array() ) {
+	private function __construct( string $error_slug, string $message, int $http_status = 400, array $context = array() ) {
 		parent::__construct( $message, $http_status );
 		$this->error_slug       = $error_slug;
 		$this->context          = $context;
 		$this->context['error'] = $error_slug;
+	}
+
+	/**
+	 * @param array<string, mixed> $context
+	 * @throws self
+	 */
+	public static function create( string $error_slug, string $message, int $http_status = 400, array $context = array() ): self {
+		// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Messages are localized at REST/AJAX boundaries.
+		return new self( $error_slug, $message, $http_status, $context );
 	}
 
 	public function get_error_slug(): string {
@@ -52,6 +61,6 @@ class Api_Exception extends \Exception {
 		$message = is_array( $body ) && isset( $body['message'] ) ? (string) $body['message'] : $fallback_message;
 		$context = is_array( $body ) ? $body : array();
 
-		return new self( $error, $message, $status, $context );
+		return self::create( $error, $message, $status, $context );
 	}
 }

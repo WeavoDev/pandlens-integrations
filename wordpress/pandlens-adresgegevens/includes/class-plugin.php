@@ -49,8 +49,7 @@ final class Plugin {
 	}
 
 	public function init(): void {
-		add_action( 'init', array( $this, 'load_textdomain' ) );
-		add_action( 'init', array( $this->rest, 'register_routes' ) );
+		add_action( 'rest_api_init', array( $this->rest, 'register_routes' ) );
 		add_action( 'init', array( $this->shortcode, 'register' ) );
 		add_action( 'init', array( $this->block, 'register' ) );
 		add_action( 'admin_menu', array( $this->admin_page, 'register_menu' ) );
@@ -62,14 +61,6 @@ final class Plugin {
 		Integrations\Contact_Form_7::register( $this->frontend_assets );
 		Integrations\Wpforms::register( $this->frontend_assets );
 		Integrations\Elementor_Forms::register( $this->frontend_assets );
-	}
-
-	public function load_textdomain(): void {
-		load_plugin_textdomain(
-			'pandlens-adresgegevens',
-			false,
-			dirname( plugin_basename( PANDLENS_ADRESGEGEVENS_PLUGIN_FILE ) ) . '/languages'
-		);
 	}
 
 	public function settings(): Settings {

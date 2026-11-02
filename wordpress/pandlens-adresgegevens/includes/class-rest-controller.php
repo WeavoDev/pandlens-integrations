@@ -155,7 +155,7 @@ class Rest_Controller {
 
 		return new WP_Error(
 			'pandlens_' . $exception->get_error_slug(),
-			$exception->getMessage(),
+			User_Messages::for_slug( $exception->get_error_slug(), $exception->getMessage() ),
 			$data
 		);
 	}
