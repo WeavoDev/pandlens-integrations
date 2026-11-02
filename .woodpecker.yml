@@ -6,30 +6,13 @@ when:
       - cursor/**
 
 steps:
-  root:
+  ci:
     image: node:22-bookworm-slim
+    environment:
+      NPM_CONFIG_IGNORE_SCRIPTS: "false"
     commands:
       - npm ci
       - npm run lint
-
-  shared-tests:
-    image: node:22-bookworm-slim
-    commands:
       - node --test shared/test/*.test.js
-
-  zapier:
-    image: node:22-bookworm-slim
-    commands:
-      - cd zapier && npm ci
-      - cd zapier && npm run lint
-      - cd zapier && npm test
-      - cd zapier && npx zapier validate
-
-  n8n:
-    image: node:22-bookworm-slim
-    commands:
-      - cd n8n && npm ci
-      - cd n8n && npm run lint
-      - cd n8n && npm run build
-      - cd n8n && npm test
-      - cd n8n && npm run scan
+      - cd zapier && npm ci && npm run lint && npm test && npx zapier validate
+      - cd n8n && npm ci && npm run lint && npm run build && npm test && npm run scan
