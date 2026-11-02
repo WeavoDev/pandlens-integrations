@@ -30,10 +30,7 @@ class Rate_Limiter {
 	public function assert_allowed( Settings $settings ): void {
 		$backoff_until = (int) get_option( self::BACKOFF_OPTION, 0 );
 		if ( $backoff_until > time() ) {
-			throw new Api_Exception(
-				'rate_limit_exceeded',
-				__( 'Too many requests. Please wait a moment and try again.', 'pandlens-adresgegevens' ),
-				429,
+			$this->throw_rate_limit(
 				array( 'retry_after' => $backoff_until - time() )
 			);
 		}
@@ -56,10 +53,7 @@ class Rate_Limiter {
 		}
 
 		if ( (int) $data['count'] >= $limit ) {
-			throw new Api_Exception(
-				'rate_limit_exceeded',
-				__( 'Too many address lookups from your connection. Please wait a minute.', 'pandlens-adresgegevens' ),
-				429,
+			$this->throw_rate_limit(
 				array( 'retry_after' => MINUTE_IN_SECONDS - ( time() - (int) $data['started'] ) )
 			);
 		}
@@ -80,5 +74,14 @@ class Rate_Limiter {
 		}
 
 		return md5( $ip );
+	}
+
+	/**
+	 * @param array<string, mixed> $context
+	 * @throws Api_Exception
+	 */
+	private function throw_rate_limit( array $context ): void {
+		// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Localized at REST/AJAX boundaries.
+		throw Api_Exception::create( 'rate_limit_exceeded', 'Too many requests.', 429, $context );
 	}
 }
