@@ -1,0 +1,6 @@
+wordpress/dev/wp-site/
+wordpress/dev/wp-cli.phar
+wordpress/dev/.wp-cli-cache/
+wordpress/pandlens-adresgegevens/vendor/
+wordpress/pandlens-adresgegevens/composer.phar
+wordpress/.phpunit.result.cache

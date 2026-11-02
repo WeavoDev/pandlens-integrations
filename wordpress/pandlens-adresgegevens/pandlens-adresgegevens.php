@@ -27,10 +27,7 @@ define( 'PANDLENS_ADRESGEGEVENS_PLUGIN_FILE', __FILE__ );
 define( 'PANDLENS_ADRESGEGEVENS_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'PANDLENS_ADRESGEGEVENS_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 
-$autoload = PANDLENS_ADRESGEGEVENS_PLUGIN_DIR . 'vendor/autoload.php';
-if ( is_readable( $autoload ) ) {
-	require_once $autoload;
-}
+require_once PANDLENS_ADRESGEGEVENS_PLUGIN_DIR . 'includes/loader.php';
 
 require_once PANDLENS_ADRESGEGEVENS_PLUGIN_DIR . 'includes/class-plugin.php';
 

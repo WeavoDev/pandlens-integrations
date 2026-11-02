@@ -1,0 +1,7 @@
+Success: Checks complete. No errors found.
+
+Run locally:
+  bash wordpress/dev/setup-wp-site.sh
+  bash wordpress/dev/run-plugin-check.sh
+
+Recorded: 2026-11-02 (Plugin Check stable from wordpress.org, WP 6.x dev site with CF7 + mocked Pandlens API mu-plugin).

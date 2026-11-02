@@ -1,8 +1,8 @@
 === Pandlens Adresgegevens ===
 Contributors: pandlens
-Tags: address, postcode, gravity forms, contact form 7, netherlands
+Tags: address, postcode, netherlands, forms, autofill
 Requires at least: 6.0
-Tested up to: 6.8
+Tested up to: 7.1
 Requires PHP: 7.4
 Stable tag: 1.0.0
 License: GPLv2 or later
@@ -58,7 +58,7 @@ No. It supports one address lookup at a time from a form or the lookup block.
 == Screenshots ==
 
 1. Settings page with API key and connection test
-2. Gravity Forms per-form field mapping
+2. Contact Form 7 field mapping and autofill on a form
 3. Address lookup block on the front end
 4. Ambiguous address candidate picker
 

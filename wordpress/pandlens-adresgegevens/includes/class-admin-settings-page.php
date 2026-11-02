@@ -172,7 +172,7 @@ class Admin_Settings_Page {
 			);
 		} catch ( Api_Exception $exception ) {
 			$payload = array(
-				'message' => $exception->getMessage(),
+				'message' => User_Messages::for_slug( $exception->get_error_slug(), $exception->getMessage() ),
 				'error'   => $exception->get_error_slug(),
 			);
 			if ( 'unauthorized' === $exception->get_error_slug() ) {
