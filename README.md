@@ -1,4 +1,4 @@
-# Pandlens integrations (Zapier + n8n)
+# Pandlens integrations
 
 Public MIT repository for thin clients to the [Pandlens](https://pandlens.nl) Dutch property API at `https://api.pandlens.nl`.
 
@@ -10,10 +10,17 @@ Pandlens is a property intelligence API for Dutch addresses. Each action looks u
 |------|---------|
 | [`zapier/`](zapier/) | Zapier Platform CLI app (API key auth, connection test on `/v1/usage`, **Enrich Address** and **Get Energy Label** actions) |
 | [`n8n/`](n8n/) | Community node package **`n8n-nodes-pandlens`** plus an HTTP Request workflow template |
+| [`wordpress/pandlens-adresgegevens/`](wordpress/pandlens-adresgegevens/) | WordPress plugin (GPL-2.0-or-later) for form address autofill |
 | [`docs/`](docs/) | End-user help ([English](docs/help-en.md)) |
 | [`fixtures/`](fixtures/) | Recorded JSON responses for CI (no live API key in tests) |
 
-No batch endpoints, triggers, or bulk export actions are exposed here.
+No batch endpoints, triggers, or bulk export actions are exposed in the Zapier/n8n packages.
+
+## WordPress: Pandlens Adresgegevens
+
+GPL-2.0-or-later plugin that autofills Dutch address and building fields in Gravity Forms, Contact Form 7, and other forms via the Pandlens API.
+
+See the plugin [`readme.txt`](wordpress/pandlens-adresgegevens/readme.txt) for installation and WordPress.org submission notes.
 
 ## API key
 
@@ -26,13 +33,16 @@ Customers can self-serve a free key at [pandlens.nl/en/signup](https://pandlens.
 node --test shared/test/*.test.js
 
 # Zapier
-cd zapier && npm install && npm test && npx zapier validate
+cd zapier && npm ci && npm test && npx zapier validate
 
 # n8n
-cd n8n && npm install && npm run lint && npm run build && npm test && npm run scan
+cd n8n && npm ci && npm run lint && npm run build && npm test && npm run scan
+
+# WordPress plugin
+cd wordpress/pandlens-adresgegevens && composer install && vendor/bin/phpcs && vendor/bin/phpunit
 ```
 
-CI runs on [Woodpecker](https://ci.daan.gg) (`.woodpecker.yml`). GitHub Actions includes a **manual-only** workflow to publish the n8n package to npm with provenance (`workflow_dispatch`; requires `NPM_TOKEN`).
+CI runs on [Woodpecker](https://ci.daan.gg) (`.woodpecker.yml`): PHP quality for the plugin, and Node lint/tests/validate/scan for Zapier and n8n. GitHub Actions includes a **manual-only** workflow to publish the n8n package to npm with provenance (`workflow_dispatch`; requires `NPM_TOKEN`).
 
 ## Publishing (manual)
 
@@ -41,4 +51,4 @@ CI runs on [Woodpecker](https://ci.daan.gg) (`.woodpecker.yml`). GitHub Actions 
 
 ## Licence
 
-MIT — see [LICENSE](LICENSE).
+MIT for Zapier/n8n/shared code — see [LICENSE](LICENSE). WordPress plugin is GPL-2.0-or-later.

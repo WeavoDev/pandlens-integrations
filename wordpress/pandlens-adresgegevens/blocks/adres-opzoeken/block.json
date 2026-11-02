@@ -1,0 +1,19 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "pandlens/adres-opzoeken",
+	"title": "Adres opzoeken",
+	"category": "widgets",
+	"icon": "location",
+	"description": "Look up a Dutch address with postcode and house number.",
+	"textdomain": "pandlens-adresgegevens",
+	"supports": {
+		"html": false
+	},
+	"attributes": {
+		"showResults": {
+			"type": "boolean",
+			"default": true
+		}
+	}
+}

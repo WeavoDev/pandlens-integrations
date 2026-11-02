@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ---
 when:
   - event: push
@@ -16,3 +17,21 @@ steps:
       - node --test shared/test/*.test.js
       - cd zapier && npm ci && npm run lint && npm test && npx zapier validate
       - cd /woodpecker/src/github.com/WeavoDev/pandlens-integrations/n8n && npm ci && npm run lint && npm run build && npm test && npm run scan
+=======
+when:
+  - event: push
+  - event: pull_request
+
+steps:
+  - name: pandlens-adresgegevens quality
+    image: php:8.2-cli
+    commands:
+      - apt-get update && apt-get install -y git unzip libzip-dev
+      - docker-php-ext-install zip
+      - curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+      - cd wordpress/pandlens-adresgegevens
+      - composer install --no-interaction --prefer-dist
+      - find . -path ./vendor -prune -o -name '*.php' -print0 | xargs -0 -n1 php -l
+      - vendor/bin/phpcs
+      - vendor/bin/phpunit
+>>>>>>> origin/main
