@@ -15,4 +15,4 @@ steps:
       - npm run lint
       - node --test shared/test/*.test.js
       - cd zapier && npm ci && npm run lint && npm test && npx zapier validate
-      - cd n8n && npm ci && npm run lint && npm run build && npm test && npm run scan
+      - cd /woodpecker/src/github.com/WeavoDev/pandlens-integrations/n8n && npm ci && npm run lint && npm run build && npm test && npm run scan
