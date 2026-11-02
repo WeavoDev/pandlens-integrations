@@ -5,5 +5,11 @@ module.exports = {
     node: true,
   },
   extends: ['eslint:recommended'],
-  ignorePatterns: ['dist/', 'node_modules/', 'n8n/', 'zapier/node_modules/'],
+  ignorePatterns: [
+    'dist/',
+    'node_modules/',
+    'n8n/',
+    'wordpress/',
+    'zapier/node_modules/',
+  ],
 };
