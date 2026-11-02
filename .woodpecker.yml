@@ -6,8 +6,7 @@ steps:
   - name: pandlens-adresgegevens quality
     image: php:8.2-cli
     commands:
-      - apt-get update && apt-get install -y git unzip zip gettext libzip-dev
-      - docker-php-ext-install zip
+      - apt-get update && apt-get install -y git unzip zip gettext
       - curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
       - cd wordpress/pandlens-adresgegevens && php /usr/local/bin/composer install --no-interaction --prefer-dist
       - cd wordpress/pandlens-adresgegevens && find includes blocks -name '*.php' -print0 | xargs -0 -n1 php -l
