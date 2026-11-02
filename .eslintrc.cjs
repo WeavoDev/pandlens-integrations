@@ -5,5 +5,5 @@ module.exports = {
     node: true,
   },
   extends: ['eslint:recommended'],
-  ignorePatterns: ['dist/', 'node_modules/', 'n8n/dist/'],
+  ignorePatterns: ['dist/', 'node_modules/', 'n8n/', 'zapier/node_modules/'],
 };

@@ -41,7 +41,9 @@ Replace the sample postcode and house number in the **Sample address** node, or 
 |-------------|---------|------------|
 | 401 | Invalid or missing API key | Check the key in the portal |
 | 402 | Monthly lookup quota used | Upgrade or wait for the next month |
-| 429 | Too many requests per minute | Slow down parallel runs |
+| 429 | Too many requests per minute | Slow down parallel runs; retry after the time shown in the error |
+| Address not found | No property for postcode and house number | Verify postcode, number, letter, and suffix |
+| Ambiguous address | More than one match | Add house letter or suffix; pick from the candidate list in the error |
 
 There is **no batch action** in these integrations. Loop over rows in your workflow if you need many addresses; each iteration is one billable lookup.
 

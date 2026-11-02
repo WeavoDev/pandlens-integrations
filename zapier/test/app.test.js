@@ -61,4 +61,53 @@ describe('Pandlens Zapier app', () => {
       err.message.should.match(/monthly lookup limit/i);
     }
   });
+
+  it('maps address_not_found JSON', async () => {
+    const body = require('../../fixtures/errors/address-not-found.json');
+    nock('https://api.pandlens.nl').get('/v1/address/9999ZZ/1').reply(404, body);
+    try {
+      await appTester(App.creates.enrich_address.operation.perform, {
+        authData: { apiKey: 'test-key' },
+        inputData: { postcode: '9999ZZ', huisnummer: 1 },
+      });
+      throw new Error('expected failure');
+    } catch (err) {
+      err.message.should.match(/No property was found/i);
+    }
+  });
+
+  it('maps address_ambiguous JSON with candidates', async () => {
+    const body = require('../../fixtures/errors/address-ambiguous.json');
+    nock('https://api.pandlens.nl').get('/v1/address/1012JS/1').reply(409, body);
+    try {
+      await appTester(App.creates.enrich_address.operation.perform, {
+        authData: { apiKey: 'test-key' },
+        inputData: { postcode: '1012JS', huisnummer: 1 },
+      });
+      throw new Error('expected failure');
+    } catch (err) {
+      err.message.should.match(/more than one address/i);
+      err.message.should.match(/1012JS/);
+    }
+  });
+
+  it('maps 429 with rate limit reset header', async () => {
+    const reset = Math.floor(Date.now() / 1000) + 45;
+    nock('https://api.pandlens.nl')
+      .get('/v1/address/6101DB/19')
+      .reply(429, { error: 'rate_limited' }, { 'x-ratelimit-reset': String(reset) });
+    try {
+      await appTester(App.creates.enrich_address.operation.perform, {
+        authData: { apiKey: 'test-key' },
+        inputData: { postcode: '6101DB', huisnummer: 19 },
+      });
+      throw new Error('expected failure');
+    } catch (err) {
+      const msg =
+        typeof err.message === 'string' && err.message.startsWith('{')
+          ? JSON.parse(err.message).message
+          : err.message;
+      msg.should.match(/rate limit exceeded/i);
+    }
+  });
 });

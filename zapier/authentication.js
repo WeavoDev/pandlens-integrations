@@ -19,7 +19,7 @@ module.exports = {
     const response = await z.request({
       url: `${API_BASE_URL}/v1/usage`,
     });
-    assertOkStatus(response.status, response.content, z);
+    assertOkStatus(response.status, response.content, z, response.headers);
     const usage = response.json;
     const quota =
       usage.monthlyQuota === null || usage.monthlyQuota === undefined

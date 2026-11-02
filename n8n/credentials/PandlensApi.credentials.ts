@@ -1,5 +1,5 @@
 // eslint-disable-next-line @typescript-eslint/consistent-type-imports
-import type { ICredentialType, INodeProperties } from 'n8n-workflow';
+import type { ICredentialTestRequest, ICredentialType, INodeProperties } from 'n8n-workflow';
 
 export class PandlensApi implements ICredentialType {
 	name = 'pandlensApi';
@@ -21,4 +21,14 @@ export class PandlensApi implements ICredentialType {
 				'Pandlens API key sent in the X-Api-Key header. Get a free key at https://pandlens.nl/en/signup',
 		},
 	];
+
+	test: ICredentialTestRequest = {
+		request: {
+			baseURL: 'https://api.pandlens.nl',
+			url: '/v1/usage',
+			headers: {
+				'X-Api-Key': '={{$credentials.apiKey}}',
+			},
+		},
+	};
 }

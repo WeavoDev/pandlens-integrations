@@ -1,9 +1,11 @@
 name: Publish n8n community package
 
 on:
-  push:
-    tags:
-      - 'n8n-v*'
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Type publish to run npm publish with provenance'
+        required: true
 
 permissions:
   id-token: write
@@ -11,6 +13,7 @@ permissions:
 
 jobs:
   publish:
+    if: github.event.inputs.confirm == 'publish'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -20,7 +23,7 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
       - name: Install and build
         working-directory: n8n
-        run: npm install --ignore-scripts && npm run build
+        run: npm ci --ignore-scripts && npm run build
       - name: Publish with provenance
         working-directory: n8n
         run: npm publish --provenance --access public

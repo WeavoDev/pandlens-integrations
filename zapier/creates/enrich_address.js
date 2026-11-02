@@ -61,7 +61,7 @@ module.exports = {
     perform: async (z, bundle) => {
       const url = buildAddressPath(bundle.inputData.postcode, bundle.inputData.huisnummer, bundle.inputData);
       const response = await z.request({ url });
-      assertOkStatus(response.status, response.content, z);
+      assertOkStatus(response.status, response.content, z, response.headers);
       return flattenEnrichment(response.json);
     },
     sample: require('../../fixtures/address-enrichment-flat.sample.json'),

@@ -10,7 +10,7 @@ Pandlens is a property intelligence API for Dutch addresses. Each action looks u
 |------|---------|
 | [`zapier/`](zapier/) | Zapier Platform CLI app (API key auth, connection test on `/v1/usage`, **Enrich Address** and **Get Energy Label** actions) |
 | [`n8n/`](n8n/) | Community node package **`n8n-nodes-pandlens`** plus an HTTP Request workflow template |
-| [`docs/`](docs/) | End-user help ([English](docs/help-en.md), [Dutch summary](docs/help-nl.md)) |
+| [`docs/`](docs/) | End-user help ([English](docs/help-en.md)) |
 | [`fixtures/`](fixtures/) | Recorded JSON responses for CI (no live API key in tests) |
 
 No batch endpoints, triggers, or bulk export actions are exposed here.
@@ -32,12 +32,12 @@ cd zapier && npm install && npm test && npx zapier validate
 cd n8n && npm install && npm run lint && npm run build && npm test && npm run scan
 ```
 
-CI runs on [Woodpecker](https://ci.daan.gg) (`.woodpecker.yml`). The only GitHub Actions workflow publishes the n8n package to npm with provenance when a tag is pushed (requires `NPM_TOKEN`).
+CI runs on [Woodpecker](https://ci.daan.gg) (`.woodpecker.yml`). GitHub Actions includes a **manual-only** workflow to publish the n8n package to npm with provenance (`workflow_dispatch`; requires `NPM_TOKEN`).
 
 ## Publishing (manual)
 
 - **Zapier:** `cd zapier && zapier push` from the developer account on info@pandlens.nl after review prep (test Zaps, `zapier validate`).
-- **n8n:** tag release → GitHub Actions `npm publish --provenance` → submit for verification in the n8n Creator Portal.
+- **n8n:** run the **Publish n8n community package** GitHub Actions workflow manually after tagging, or publish locally with `npm publish --provenance` from `n8n/` → submit for verification in the n8n Creator Portal.
 
 ## Licence
 
