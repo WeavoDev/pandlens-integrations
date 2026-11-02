@@ -11,7 +11,6 @@ steps:
       - curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
       - cd wordpress/pandlens-adresgegevens && php /usr/local/bin/composer install --no-interaction --prefer-dist
       - cd wordpress/pandlens-adresgegevens && find includes blocks -name '*.php' -print0 | xargs -0 -n1 php -l
-      - cd wordpress/pandlens-adresgegevens && php pandlens-adresgegevens.php >/dev/null || test -f pandlens-adresgegevens.php
       - cd wordpress && pandlens-adresgegevens/vendor/bin/phpcs --standard=phpcs.xml.dist
       - cd wordpress && pandlens-adresgegevens/vendor/bin/phpunit -c phpunit.xml.dist
       - cd wordpress && msgfmt -o pandlens-adresgegevens/languages/pandlens-adresgegevens-nl_NL.mo pandlens-adresgegevens/languages/pandlens-adresgegevens-nl_NL.po
