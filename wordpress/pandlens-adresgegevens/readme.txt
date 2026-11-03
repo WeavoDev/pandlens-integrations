@@ -4,7 +4,7 @@ Tags: address, postcode, netherlands, forms, autofill
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.0.0
+Stable tag: 1.1.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -22,7 +22,8 @@ Features:
 * Gravity Forms add-on with per-form field mapping
 * Contact Form 7 support with configurable field names
 * Optional WPForms and Elementor Pro form hooks
-* Shortcode `[pandlens_adres_opzoeken]` and block **Adres opzoeken**
+* Shortcode `[pandlens_adres_opzoeken]` and block **Adres opzoeken** (form autofill)
+* Shortcode `[pandlens_property_card]` and block **Pandlens woningkaart** (property card with optional form prefill via `prefill_map` JSON)
 * Handles not found, ambiguous addresses (pick a suffix), quota, rate limits, and invalid API keys
 
 One lookup per request. No bulk import or list enrichment. The plugin does not store personal data beyond what your form already collects.
@@ -73,6 +74,10 @@ This plugin connects to the **Pandlens API** to retrieve Dutch address and build
 * Privacy: [https://pandlens.nl/privacy](https://pandlens.nl/privacy)
 
 == Changelog ==
+
+= 1.1.0 =
+* Property card shortcode and Gutenberg block with server-side card JSON and optional selector-based form prefill.
+* REST route `POST /wp-json/pandlens-adresgegevens/v1/property-card`.
 
 = 1.0.0 =
 * Initial release.

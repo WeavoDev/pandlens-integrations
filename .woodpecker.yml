@@ -23,9 +23,11 @@ steps:
       - pandlens-adresgegevens/vendor/bin/phpunit -c phpunit.xml.dist
       - msgfmt -o pandlens-adresgegevens/languages/pandlens-adresgegevens-nl_NL.mo pandlens-adresgegevens/languages/pandlens-adresgegevens-nl_NL.po
       - bash build-zip.sh
+    artifact:
+      - wordpress/dist/*.zip
 
   integrations:
-    name: zapier-n8n integrations
+    name: zapier-n8n-widget integrations
     image: node:22-bookworm-slim
     environment:
       NPM_CONFIG_IGNORE_SCRIPTS: "false"
@@ -33,5 +35,10 @@ steps:
       - npm ci
       - npm run lint
       - node --test shared/test/*.test.js
+      - (cd widget && npm ci && npm run build && npm test && npm run size-check)
       - (cd zapier && npm ci && npm run lint && npm test && npx zapier validate)
       - (cd n8n && npm ci && npm run lint && npm run build && npm test && npm run scan)
+    artifact:
+      - widget/dist/pandlens-widget.min.js
+      - widget/demo/index.html
+      - widget/demo/mock-data.js

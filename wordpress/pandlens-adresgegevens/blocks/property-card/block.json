@@ -1,0 +1,23 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "pandlens/property-card",
+	"title": "Pandlens woningkaart",
+	"category": "widgets",
+	"icon": "admin-home",
+	"description": "Property card with postcode lookup (Pandlens).",
+	"textdomain": "pandlens-adresgegevens",
+	"attributes": {
+		"lang": {
+			"type": "string",
+			"default": "nl"
+		},
+		"accentColor": {
+			"type": "string",
+			"default": ""
+		}
+	},
+	"supports": {
+		"html": false
+	}
+}

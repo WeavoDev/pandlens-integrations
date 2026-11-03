@@ -10,6 +10,7 @@ module.exports = {
     'node_modules/',
     'n8n/',
     'wordpress/',
+    'widget/dist/',
     'zapier/node_modules/',
   ],
 };

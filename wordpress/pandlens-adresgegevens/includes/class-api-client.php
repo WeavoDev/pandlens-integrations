@@ -26,12 +26,15 @@ class Api_Client {
 
 	private Address_Mapper $mapper;
 
+	private Property_Card_Mapper $property_card_mapper;
+
 	public function __construct( Settings $settings ) {
-		$this->settings     = $settings;
-		$this->normalizer   = new Address_Normalizer();
-		$this->cache        = new Address_Cache();
-		$this->rate_limiter = new Rate_Limiter();
-		$this->mapper       = new Address_Mapper();
+		$this->settings              = $settings;
+		$this->normalizer            = new Address_Normalizer();
+		$this->cache                 = new Address_Cache();
+		$this->rate_limiter          = new Rate_Limiter();
+		$this->mapper                = new Address_Mapper();
+		$this->property_card_mapper  = new Property_Card_Mapper();
 	}
 
 	/**
@@ -87,6 +90,21 @@ class Api_Client {
 			'fields' => $this->mapper->map( $response ),
 			'raw'    => $response,
 			'cached' => false,
+		);
+	}
+
+	/**
+	 * @return array{fields: array<string, string|null>, card: array<string, mixed>, raw: array<string, mixed>, cached: bool}
+	 * @throws Api_Exception
+	 */
+	public function lookup_property_card( string $postcode, string $huisnummer, string $huisletter = '', string $toevoeging = '', string $lang = 'nl', bool $enforce_proxy_limit = true ): array {
+		$result = $this->lookup( $postcode, $huisnummer, $huisletter, $toevoeging, $enforce_proxy_limit );
+
+		return array(
+			'fields' => $result['fields'],
+			'card'   => $this->property_card_mapper->build( $result['raw'], $lang ),
+			'raw'    => $result['raw'],
+			'cached' => $result['cached'],
 		);
 	}
 

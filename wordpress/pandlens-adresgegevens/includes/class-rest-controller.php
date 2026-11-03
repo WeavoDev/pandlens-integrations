@@ -60,6 +60,43 @@ class Rest_Controller {
 
 		register_rest_route(
 			'pandlens-adresgegevens/v1',
+			'/property-card',
+			array(
+				'methods'             => WP_REST_Server::CREATABLE,
+				'callback'            => array( $this, 'property_card' ),
+				'permission_callback' => array( $this, 'verify_public_nonce' ),
+				'args'                => array(
+					'postcode'   => array(
+						'required'          => true,
+						'type'              => 'string',
+						'sanitize_callback' => 'sanitize_text_field',
+					),
+					'huisnummer' => array(
+						'required'          => true,
+						'type'              => 'string',
+						'sanitize_callback' => 'sanitize_text_field',
+					),
+					'huisletter' => array(
+						'required'          => false,
+						'type'              => 'string',
+						'sanitize_callback' => 'sanitize_text_field',
+					),
+					'toevoeging' => array(
+						'required'          => false,
+						'type'              => 'string',
+						'sanitize_callback' => 'sanitize_text_field',
+					),
+					'lang'       => array(
+						'required'          => false,
+						'type'              => 'string',
+						'sanitize_callback' => 'sanitize_text_field',
+					),
+				),
+			)
+		);
+
+		register_rest_route(
+			'pandlens-adresgegevens/v1',
 			'/usage',
 			array(
 				'methods'             => WP_REST_Server::READABLE,
@@ -106,6 +143,40 @@ class Rest_Controller {
 				array(
 					'success' => true,
 					'fields'  => $result['fields'],
+					'cached'  => $result['cached'],
+				),
+				200
+			);
+		} catch ( Api_Exception $exception ) {
+			return $this->error_response( $exception );
+		}
+	}
+
+	/**
+	 * @return WP_REST_Response|WP_Error
+	 */
+	public function property_card( WP_REST_Request $request ) {
+		$lang = (string) ( $request->get_param( 'lang' ) ?? '' );
+		if ( 0 !== strpos( strtolower( $lang ), 'en' ) ) {
+			$lang = 'nl';
+		} else {
+			$lang = 'en';
+		}
+
+		try {
+			$result = $this->api_client->lookup_property_card(
+				(string) $request->get_param( 'postcode' ),
+				(string) $request->get_param( 'huisnummer' ),
+				(string) ( $request->get_param( 'huisletter' ) ?? '' ),
+				(string) ( $request->get_param( 'toevoeging' ) ?? '' ),
+				$lang
+			);
+
+			return new WP_REST_Response(
+				array(
+					'success' => true,
+					'fields'  => $result['fields'],
+					'card'    => $result['card'],
 					'cached'  => $result['cached'],
 				),
 				200

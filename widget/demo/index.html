@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="nl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Pandlens property card widget demo</title>
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        margin: 2rem;
+        background: #f4f6f8;
+      }
+      main {
+        max-width: 32rem;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Pandlens woningkaart (demo)</h1>
+      <p>
+        Mock mode: no live API key required. Try postcode <strong>6101DB</strong>, huisnummer
+        <strong>19</strong>.
+      </p>
+      <pandlens-card
+        data-key="pk_test_demo"
+        data-lang="nl"
+        data-accent="#0b5fff"
+        data-mock="1"
+      ></pandlens-card>
+    </main>
+    <script src="mock-data.js"></script>
+    <script src="../dist/pandlens-widget.min.js" defer></script>
+  </body>
+</html>
