@@ -1,0 +1,15 @@
+{
+  "name": "@pandlens/embed-widget",
+  "private": true,
+  "type": "module",
+  "version": "1.0.0",
+  "description": "Embeddable Pandlens property card (vanilla JS)",
+  "scripts": {
+    "build": "node build.mjs",
+    "test": "node --test test/*.test.js",
+    "size-check": "node build.mjs --size-only"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.0"
+  }
+}

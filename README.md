@@ -10,8 +10,9 @@ Pandlens is a property intelligence API for Dutch addresses. Each action looks u
 |------|---------|
 | [`zapier/`](zapier/) | Zapier Platform CLI app (API key auth, connection test on `/v1/usage`, **Enrich Address** and **Get Energy Label** actions) |
 | [`n8n/`](n8n/) | Community node package **`n8n-nodes-pandlens`** plus an HTTP Request workflow template |
-| [`wordpress/pandlens-adresgegevens/`](wordpress/pandlens-adresgegevens/) | WordPress plugin (GPL-2.0-or-later) for form address autofill |
-| [`docs/`](docs/) | End-user help ([English](docs/help-en.md)) |
+| [`wordpress/pandlens-adresgegevens/`](wordpress/pandlens-adresgegevens/) | WordPress plugin (GPL-2.0-or-later) for form address autofill and property card block |
+| [`widget/`](widget/) | Embeddable property card (`<pandlens-card>`, publishable widget key) |
+| [`docs/`](docs/) | End-user help ([English](docs/help-en.md)), [widget key API spec](docs/widget-key-spec.md) |
 | [`fixtures/`](fixtures/) | Recorded JSON responses for CI (no live API key in tests) |
 
 No batch endpoints, triggers, or bulk export actions are exposed in the Zapier/n8n packages.
@@ -40,9 +41,12 @@ cd n8n && npm ci && npm run lint && npm run build && npm test && npm run scan
 
 # WordPress plugin
 cd wordpress/pandlens-adresgegevens && composer install && vendor/bin/phpcs && vendor/bin/phpunit
+
+# Embed widget
+cd widget && npm ci && npm run build && npm test && npm run size-check
 ```
 
-CI runs on [Woodpecker](https://ci.daan.gg) (`.woodpecker.yml`): PHP quality for the plugin, and Node lint/tests/validate/scan for Zapier and n8n. GitHub Actions includes a **manual-only** workflow to publish the n8n package to npm with provenance (`workflow_dispatch`; requires `NPM_TOKEN`).
+CI runs on [Woodpecker](https://ci.daan.gg) (`.woodpecker.yml`): PHP quality and plugin ZIP for WordPress, Node lint/tests for Zapier, n8n, shared fixtures, and the embed widget (including a 30 KiB gzip size gate).
 
 ## Publishing (manual)
 

@@ -26,18 +26,24 @@ final class Plugin {
 
 	private Shortcode $shortcode;
 
+	private Property_Card_Shortcode $property_card_shortcode;
+
 	private Block $block;
+
+	private Property_Card_Block $property_card_block;
 
 	private Admin_Settings_Page $admin_page;
 
 	private function __construct() {
-		$this->settings        = new Settings();
-		$this->api_client      = new Api_Client( $this->settings );
-		$this->rest            = new Rest_Controller( $this->api_client );
-		$this->frontend_assets = new Frontend_Assets();
-		$this->shortcode       = new Shortcode( $this->frontend_assets );
-		$this->block           = new Block( $this->frontend_assets );
-		$this->admin_page      = new Admin_Settings_Page( $this->settings, $this->api_client );
+		$this->settings                = new Settings();
+		$this->api_client              = new Api_Client( $this->settings );
+		$this->rest                    = new Rest_Controller( $this->api_client );
+		$this->frontend_assets         = new Frontend_Assets();
+		$this->shortcode               = new Shortcode( $this->frontend_assets );
+		$this->property_card_shortcode = new Property_Card_Shortcode( $this->frontend_assets );
+		$this->block                   = new Block( $this->frontend_assets );
+		$this->property_card_block     = new Property_Card_Block( $this->frontend_assets );
+		$this->admin_page              = new Admin_Settings_Page( $this->settings, $this->api_client );
 	}
 
 	public static function instance(): Plugin {
@@ -51,7 +57,9 @@ final class Plugin {
 	public function init(): void {
 		add_action( 'rest_api_init', array( $this->rest, 'register_routes' ) );
 		add_action( 'init', array( $this->shortcode, 'register' ) );
+		add_action( 'init', array( $this->property_card_shortcode, 'register' ) );
 		add_action( 'init', array( $this->block, 'register' ) );
+		add_action( 'init', array( $this->property_card_block, 'register' ) );
 		add_action( 'admin_menu', array( $this->admin_page, 'register_menu' ) );
 		add_action( 'admin_init', array( $this->admin_page, 'register_settings' ) );
 		add_action( 'admin_enqueue_scripts', array( $this->admin_page, 'enqueue_scripts' ) );
