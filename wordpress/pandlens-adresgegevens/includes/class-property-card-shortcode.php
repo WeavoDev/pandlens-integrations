@@ -30,9 +30,9 @@ class Property_Card_Shortcode {
 	public function render( $atts = array() ): string {
 		$atts = shortcode_atts(
 			array(
-				'lang'         => '',
-				'accent'       => '',
-				'prefill_map'  => '',
+				'lang'        => '',
+				'accent'      => '',
+				'prefill_map' => '',
 			),
 			$atts,
 			'pandlens_property_card'
@@ -52,10 +52,10 @@ class Property_Card_Shortcode {
 
 		$this->assets->enqueue_property_card(
 			array(
-				'lang'        => $lang,
-				'accent'      => $accent_color,
-				'prefillMap'  => $this->parse_prefill_map( $atts['prefill_map'] ),
-				'mode'        => 'property_card',
+				'lang'       => $lang,
+				'accent'     => $accent_color,
+				'prefillMap' => $this->parse_prefill_map( $atts['prefill_map'] ),
+				'mode'       => 'property_card',
 			)
 		);
 

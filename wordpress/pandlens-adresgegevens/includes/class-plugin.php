@@ -35,15 +35,15 @@ final class Plugin {
 	private Admin_Settings_Page $admin_page;
 
 	private function __construct() {
-		$this->settings        = new Settings();
-		$this->api_client      = new Api_Client( $this->settings );
-		$this->rest            = new Rest_Controller( $this->api_client );
-		$this->frontend_assets = new Frontend_Assets();
+		$this->settings                = new Settings();
+		$this->api_client              = new Api_Client( $this->settings );
+		$this->rest                    = new Rest_Controller( $this->api_client );
+		$this->frontend_assets         = new Frontend_Assets();
 		$this->shortcode               = new Shortcode( $this->frontend_assets );
 		$this->property_card_shortcode = new Property_Card_Shortcode( $this->frontend_assets );
 		$this->block                   = new Block( $this->frontend_assets );
 		$this->property_card_block     = new Property_Card_Block( $this->frontend_assets );
-		$this->admin_page      = new Admin_Settings_Page( $this->settings, $this->api_client );
+		$this->admin_page              = new Admin_Settings_Page( $this->settings, $this->api_client );
 	}
 
 	public static function instance(): Plugin {

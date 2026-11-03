@@ -46,7 +46,7 @@ class Property_Card_Block {
 	 * @param array<string, mixed> $attributes Block attributes.
 	 */
 	public function render( array $attributes = array() ): string {
-		$lang = isset( $attributes['lang'] ) && 'en' === $attributes['lang'] ? 'en' : 'nl';
+		$lang   = isset( $attributes['lang'] ) && 'en' === $attributes['lang'] ? 'en' : 'nl';
 		$accent = isset( $attributes['accentColor'] ) ? sanitize_hex_color( (string) $attributes['accentColor'] ) : '';
 
 		$this->assets->enqueue_property_card(

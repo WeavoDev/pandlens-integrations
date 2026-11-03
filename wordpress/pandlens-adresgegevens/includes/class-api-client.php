@@ -29,12 +29,12 @@ class Api_Client {
 	private Property_Card_Mapper $property_card_mapper;
 
 	public function __construct( Settings $settings ) {
-		$this->settings              = $settings;
-		$this->normalizer            = new Address_Normalizer();
-		$this->cache                 = new Address_Cache();
-		$this->rate_limiter          = new Rate_Limiter();
-		$this->mapper                = new Address_Mapper();
-		$this->property_card_mapper  = new Property_Card_Mapper();
+		$this->settings             = $settings;
+		$this->normalizer           = new Address_Normalizer();
+		$this->cache                = new Address_Cache();
+		$this->rate_limiter         = new Rate_Limiter();
+		$this->mapper               = new Address_Mapper();
+		$this->property_card_mapper = new Property_Card_Mapper();
 	}
 
 	/**

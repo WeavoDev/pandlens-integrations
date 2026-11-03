@@ -61,7 +61,7 @@ class Property_Card_Mapper {
 			);
 		}
 
-		$energy = $this->resolve_energy( $payload, $is_en );
+		$energy   = $this->resolve_energy( $payload, $is_en );
 		$verdicts = $this->resolve_verdicts( $payload, $is_en );
 
 		$buurt_lines = array();
@@ -154,11 +154,11 @@ class Property_Card_Mapper {
 	 * @return list<array<string, string>>
 	 */
 	private function resolve_verdicts( array $payload, bool $is_en ): array {
-		$verdicts    = array();
-		$derived     = $this->arr( $payload, 'derived' );
+		$verdicts     = array();
+		$derived      = $this->arr( $payload, 'derived' );
 		$installation = $this->arr( $derived, 'installation' );
 
-		$solar_label = $is_en ? 'Solar panels' : 'Zonnepanelen';
+		$solar_label      = $is_en ? 'Solar panels' : 'Zonnepanelen';
 		$insulation_label = $is_en ? 'Insulation' : 'Isolatie';
 
 		$solar_api = $this->str( $installation, 'solarVerdict' ) ?? $this->str( $installation, 'solar' );
