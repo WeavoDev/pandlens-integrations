@@ -45,10 +45,15 @@ class Property_Card_Shortcode {
 			$lang = 'nl';
 		}
 
+		$accent_color = sanitize_hex_color( $atts['accent'] );
+		if ( ! is_string( $accent_color ) ) {
+			$accent_color = '';
+		}
+
 		$this->assets->enqueue_property_card(
 			array(
 				'lang'        => $lang,
-				'accent'      => sanitize_hex_color( $atts['accent'] ) ?: '',
+				'accent'      => $accent_color,
 				'prefillMap'  => $this->parse_prefill_map( $atts['prefill_map'] ),
 				'mode'        => 'property_card',
 			)
@@ -65,7 +70,7 @@ class Property_Card_Shortcode {
 			class="pl-pc pl-pc--shortcode"
 			data-pl-pc-root="1"
 			data-pl-pc-lang="<?php echo esc_attr( $lang ); ?>"
-			<?php echo $atts['accent'] ? 'data-pl-pc-accent="' . esc_attr( sanitize_hex_color( $atts['accent'] ) ) . '"' : ''; ?>
+			<?php echo $accent_color ? 'data-pl-pc-accent="' . esc_attr( $accent_color ) . '"' : ''; ?>
 			<?php echo $prefill_attr; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_attr on json encode above. ?>
 		></div>
 		<?php

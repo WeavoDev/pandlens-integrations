@@ -101,9 +101,12 @@ class Property_Card_Mapper {
 		$title_parts = trim( $street . ' ' . $hn );
 		$subtitle    = trim( $pc . ( $pc && $city ? ' · ' : '' ) . $city );
 
+		$fallback_title = '' !== $subtitle ? $subtitle : '—';
+		$title          = '' !== $title_parts ? $title_parts : $fallback_title;
+
 		return array(
 			'lang'          => $is_en ? 'en' : 'nl',
-			'title'         => '' !== $title_parts ? $title_parts : ( $subtitle !== '' ? $subtitle : '—' ),
+			'title'         => $title,
 			'subtitle'      => '' !== $title_parts ? $subtitle : '',
 			'facts'         => $facts,
 			'energy'        => $energy,

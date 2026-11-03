@@ -52,7 +52,7 @@ class Property_Card_Block {
 		$this->assets->enqueue_property_card(
 			array(
 				'lang'   => $lang,
-				'accent' => $accent ?: '',
+				'accent' => $accent ? $accent : '',
 				'mode'   => 'property_card',
 			)
 		);
