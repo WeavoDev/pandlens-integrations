@@ -1,0 +1,3047 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "Pandlens API (GPT Actions subset)",
+    "description": "Trimmed OpenAPI for ChatGPT Actions: per-address GET operations plus GET /v1/usage for connection tests. Customers authenticate with the X-Api-Key header (your Pandlens API key). This file excludes batch, bulk, search, and area-wide endpoints on purpose. Full specification: https://api.pandlens.nl/swagger/v1/swagger.json . Documentation: https://pandlens.nl/docs .",
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "https://api.pandlens.com"
+    }
+  ],
+  "paths": {
+    "/v1/address/{postcode}/{huisnummer}": {
+      "get": {
+        "tags": [
+          "Address"
+        ],
+        "summary": "Enrich one Dutch address",
+        "description": "Building and dwelling unit data, registered energy label and neighbourhood statistics (incl. the buurt's average WOZ value in euros, neighbourhood.gemiddeldeWozWaardeEur) for one postcode + huisnummer (optional huisletter, toevoeging). Optional include=derived,woz,energy,neighbourhood,provenance or legacy includeDerivedMetrics=true; includeGeometry (default false) and includeHistory (default false). Default response excludes derived intelligence and building footprint GeoJSON. Counts as one lookup. Repeat lookups of the same address within 24 hours are served from cache and not billed.",
+        "operationId": "GetAddress",
+        "parameters": [
+          {
+            "name": "postcode",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "huisnummer",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "huisletter",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "toevoeging",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "include",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "includeDerivedMetrics",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          {
+            "name": "includeGeometry",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          {
+            "name": "includeHistory",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "description": "Maximum requests per minute for this API key."
+              },
+              "X-RateLimit-Remaining": {
+                "description": "Remaining requests in the current one-minute window."
+              },
+              "X-RateLimit-Reset": {
+                "description": "Seconds until the current window resets."
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AddressEnrichmentResponse"
+                },
+                "example": {
+                  "address": {
+                    "postcode": "1012 JS",
+                    "huisnummer": 1,
+                    "straat": "Dam",
+                    "woonplaats": "Amsterdam"
+                  },
+                  "bag": {
+                    "verblijfsobject": {
+                      "gebruiksdoel": "winkelfunctie",
+                      "oppervlakteM2": 23820
+                    },
+                    "pand": {
+                      "bouwjaar": 1914
+                    }
+                  },
+                  "energyLabel": {
+                    "labelClass": "A"
+                  },
+                  "neighbourhood": {
+                    "buurtnaam": "Nieuwe Kerk e.o.",
+                    "gemeentenaam": "Amsterdam",
+                    "administrative": {
+                      "gemeentenaam": "Amsterdam",
+                      "provincienaam": "Noord-Holland"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error (`error` + `message`).",
+            "content": {
+              "application/json": {}
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API key (`missing_api_key` or `invalid_api_key`; JSON body includes signupUrl and docsUrl).",
+            "content": {
+              "application/json": {}
+            }
+          },
+          "402": {
+            "description": "Monthly lookup quota exceeded (`error`: monthly_quota_exceeded).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Revoked API key (`revoked_api_key`).",
+            "content": {
+              "application/json": {}
+            }
+          },
+          "404": {
+            "description": "Address not found (`address_not_found`) or ambiguous (`address_ambiguous` with `candidates`: huisletter, toevoeging).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Per-minute rate limit exceeded (`rate_limit_exceeded`).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "ApiKey": []
+          }
+        ]
+      }
+    },
+    "/v1/address/{postcode}/{huisnummer}/building": {
+      "get": {
+        "tags": [
+          "Address"
+        ],
+        "summary": "Building footprint and height or volume summary for one address.",
+        "description": "Building footprint and height or volume summary for one address. Optional huisletter and toevoeging. Per-address only; counts as one lookup. Repeat lookups of the same address within 24 hours are served from cache and not billed.",
+        "operationId": "GetAddressBuilding",
+        "parameters": [
+          {
+            "name": "postcode",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "huisnummer",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "huisletter",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "toevoeging",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "description": "Maximum requests per minute for this API key."
+              },
+              "X-RateLimit-Remaining": {
+                "description": "Remaining requests in the current one-minute window."
+              },
+              "X-RateLimit-Reset": {
+                "description": "Seconds until the current window resets."
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BuildingLookupResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error (`error` + `message`).",
+            "content": {
+              "application/json": {}
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API key (`missing_api_key` or `invalid_api_key`; JSON body includes signupUrl and docsUrl).",
+            "content": {
+              "application/json": {}
+            }
+          },
+          "402": {
+            "description": "Monthly lookup quota exceeded (`error`: monthly_quota_exceeded).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Revoked API key (`revoked_api_key`).",
+            "content": {
+              "application/json": {}
+            }
+          },
+          "404": {
+            "description": "Address not found (`address_not_found`) or ambiguous (`address_ambiguous` with `candidates`: huisletter, toevoeging).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Per-minute rate limit exceeded (`rate_limit_exceeded`).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "ApiKey": []
+          }
+        ]
+      }
+    },
+    "/v1/address/{postcode}/{huisnummer}/energy": {
+      "get": {
+        "tags": [
+          "Address"
+        ],
+        "summary": "Registered energy label for one address",
+        "description": "Current registered energy label for one postcode + huisnummer (optional huisletter, toevoeging). Pass includeHistory=true to include prior registrations for this address only. Counts as one lookup. Per-address only. Repeat lookups of the same address within 24 hours are served from cache and not billed.",
+        "operationId": "GetAddressEnergy",
+        "parameters": [
+          {
+            "name": "postcode",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "huisnummer",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "huisletter",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "toevoeging",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "includeHistory",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "description": "Maximum requests per minute for this API key."
+              },
+              "X-RateLimit-Remaining": {
+                "description": "Remaining requests in the current one-minute window."
+              },
+              "X-RateLimit-Reset": {
+                "description": "Seconds until the current window resets."
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EnergyLookupResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error (`error` + `message`).",
+            "content": {
+              "application/json": {}
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API key (`missing_api_key` or `invalid_api_key`; JSON body includes signupUrl and docsUrl).",
+            "content": {
+              "application/json": {}
+            }
+          },
+          "402": {
+            "description": "Monthly lookup quota exceeded (`error`: monthly_quota_exceeded).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Revoked API key (`revoked_api_key`).",
+            "content": {
+              "application/json": {}
+            }
+          },
+          "404": {
+            "description": "Address not found (`address_not_found`) or ambiguous (`address_ambiguous` with `candidates`: huisletter, toevoeging).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Per-minute rate limit exceeded (`rate_limit_exceeded`).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "ApiKey": []
+          }
+        ]
+      }
+    },
+    "/v1/address/{postcode}/{huisnummer}/plot": {
+      "get": {
+        "tags": [
+          "Address"
+        ],
+        "summary": "Registered parcel size for one address.",
+        "description": "Registered parcel size for one address. Optional huisletter and toevoeging. Per-address only; counts as one lookup. Repeat lookups of the same address within 24 hours are served from cache and not billed.",
+        "operationId": "GetAddressPlot",
+        "parameters": [
+          {
+            "name": "postcode",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "huisnummer",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "huisletter",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "toevoeging",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "description": "Maximum requests per minute for this API key."
+              },
+              "X-RateLimit-Remaining": {
+                "description": "Remaining requests in the current one-minute window."
+              },
+              "X-RateLimit-Reset": {
+                "description": "Seconds until the current window resets."
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlotLookupResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error (`error` + `message`).",
+            "content": {
+              "application/json": {}
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API key (`missing_api_key` or `invalid_api_key`; JSON body includes signupUrl and docsUrl).",
+            "content": {
+              "application/json": {}
+            }
+          },
+          "402": {
+            "description": "Monthly lookup quota exceeded (`error`: monthly_quota_exceeded).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Revoked API key (`revoked_api_key`).",
+            "content": {
+              "application/json": {}
+            }
+          },
+          "404": {
+            "description": "Address not found (`address_not_found`) or ambiguous (`address_ambiguous` with `candidates`: huisletter, toevoeging).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Per-minute rate limit exceeded (`rate_limit_exceeded`).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "ApiKey": []
+          }
+        ]
+      }
+    },
+    "/v1/address/{postcode}/{huisnummer}/neighbourhood": {
+      "get": {
+        "tags": [
+          "Address"
+        ],
+        "summary": "Neighbourhood key figures (statistics, buurtWoz trend and legacy keyFigures) for the address area.",
+        "description": "Neighbourhood key figures (statistics, buurtWoz trend and legacy keyFigures) for the address area. Optional huisletter and toevoeging. Per-address only; counts as one lookup. Repeat lookups of the same address within 24 hours are served from cache and not billed.",
+        "operationId": "GetAddressNeighbourhood",
+        "parameters": [
+          {
+            "name": "postcode",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "huisnummer",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "huisletter",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "toevoeging",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "description": "Maximum requests per minute for this API key."
+              },
+              "X-RateLimit-Remaining": {
+                "description": "Remaining requests in the current one-minute window."
+              },
+              "X-RateLimit-Reset": {
+                "description": "Seconds until the current window resets."
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NeighbourhoodLookupResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error (`error` + `message`).",
+            "content": {
+              "application/json": {}
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API key (`missing_api_key` or `invalid_api_key`; JSON body includes signupUrl and docsUrl).",
+            "content": {
+              "application/json": {}
+            }
+          },
+          "402": {
+            "description": "Monthly lookup quota exceeded (`error`: monthly_quota_exceeded).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Revoked API key (`revoked_api_key`).",
+            "content": {
+              "application/json": {}
+            }
+          },
+          "404": {
+            "description": "Address not found (`address_not_found`) or ambiguous (`address_ambiguous` with `candidates`: huisletter, toevoeging).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Per-minute rate limit exceeded (`rate_limit_exceeded`).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "ApiKey": []
+          }
+        ]
+      }
+    },
+    "/v1/address/{postcode}/{huisnummer}/environment": {
+      "get": {
+        "tags": [
+          "Address"
+        ],
+        "summary": "Heritage, proximity, climate and noise blocks for one address.",
+        "description": "Heritage, proximity, climate and noise blocks for one address. Optional huisletter and toevoeging. Per-address only; counts as one lookup. Repeat lookups of the same address within 24 hours are served from cache and not billed.",
+        "operationId": "GetAddressEnvironment",
+        "parameters": [
+          {
+            "name": "postcode",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "huisnummer",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "huisletter",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "toevoeging",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "description": "Maximum requests per minute for this API key."
+              },
+              "X-RateLimit-Remaining": {
+                "description": "Remaining requests in the current one-minute window."
+              },
+              "X-RateLimit-Reset": {
+                "description": "Seconds until the current window resets."
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EnvironmentLookupResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error (`error` + `message`).",
+            "content": {
+              "application/json": {}
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API key (`missing_api_key` or `invalid_api_key`; JSON body includes signupUrl and docsUrl).",
+            "content": {
+              "application/json": {}
+            }
+          },
+          "402": {
+            "description": "Monthly lookup quota exceeded (`error`: monthly_quota_exceeded).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Revoked API key (`revoked_api_key`).",
+            "content": {
+              "application/json": {}
+            }
+          },
+          "404": {
+            "description": "Address not found (`address_not_found`) or ambiguous (`address_ambiguous` with `candidates`: huisletter, toevoeging).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Per-minute rate limit exceeded (`rate_limit_exceeded`).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "ApiKey": []
+          }
+        ]
+      }
+    },
+    "/v1/address/{postcode}/{huisnummer}/solar": {
+      "get": {
+        "tags": [
+          "Address"
+        ],
+        "summary": "Indicative rooftop solar estimate for one address.",
+        "description": "Indicative rooftop solar estimate for one address. Optional huisletter and toevoeging. Per-address only; counts as one lookup. Repeat lookups of the same address within 24 hours are served from cache and not billed.",
+        "operationId": "GetAddressSolar",
+        "parameters": [
+          {
+            "name": "postcode",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "huisnummer",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "huisletter",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "toevoeging",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "description": "Maximum requests per minute for this API key."
+              },
+              "X-RateLimit-Remaining": {
+                "description": "Remaining requests in the current one-minute window."
+              },
+              "X-RateLimit-Reset": {
+                "description": "Seconds until the current window resets."
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SolarLookupResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error (`error` + `message`).",
+            "content": {
+              "application/json": {}
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API key (`missing_api_key` or `invalid_api_key`; JSON body includes signupUrl and docsUrl).",
+            "content": {
+              "application/json": {}
+            }
+          },
+          "402": {
+            "description": "Monthly lookup quota exceeded (`error`: monthly_quota_exceeded).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Revoked API key (`revoked_api_key`).",
+            "content": {
+              "application/json": {}
+            }
+          },
+          "404": {
+            "description": "Address not found (`address_not_found`) or ambiguous (`address_ambiguous` with `candidates`: huisletter, toevoeging).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Per-minute rate limit exceeded (`rate_limit_exceeded`).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "ApiKey": []
+          }
+        ]
+      }
+    },
+    "/v1/usage": {
+      "get": {
+        "tags": [
+          "Usage"
+        ],
+        "summary": "Plan and usage this month",
+        "description": "Current plan, lookups used and remaining this month, and cost this month (EUR excl. btw). Does not count as a lookup.",
+        "operationId": "GetUsage",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-RateLimit-Limit": {
+                "description": "Maximum requests per minute for this API key."
+              },
+              "X-RateLimit-Remaining": {
+                "description": "Remaining requests in the current one-minute window."
+              },
+              "X-RateLimit-Reset": {
+                "description": "Seconds until the current window resets."
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UsageResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "ApiKey": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "ApiKey": {
+        "type": "apiKey",
+        "description": "API key sent in the X-Api-Key header",
+        "name": "X-Api-Key",
+        "in": "header"
+      }
+    },
+    "schemas": {
+      "UsageResponse": {
+        "required": [
+          "costThisMonthEur",
+          "month",
+          "plan",
+          "usedThisMonth"
+        ],
+        "type": "object",
+        "properties": {
+          "plan": {
+            "type": "string",
+            "nullable": true
+          },
+          "usedThisMonth": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "monthlyQuota": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "remainingThisMonth": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "monthlyPriceEur": {
+            "type": "number",
+            "format": "double"
+          },
+          "pricePerLookupEur": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "costThisMonthEur": {
+            "type": "number",
+            "format": "double"
+          },
+          "month": {
+            "type": "string",
+            "format": "date"
+          }
+        },
+        "additionalProperties": false
+      },
+      "SolarLookupResponse": {
+        "type": "object",
+        "properties": {
+          "solar": {
+            "$ref": "#/components/schemas/SolarPotential"
+          },
+          "sourceAsOf": {
+            "type": "string",
+            "format": "date",
+            "nullable": true
+          },
+          "versie": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "SolarPotential": {
+        "required": [
+          "aannames",
+          "bruikbaarDakM2",
+          "opbrengstKwhPerJaar",
+          "vermogenKwp"
+        ],
+        "type": "object",
+        "properties": {
+          "indicatief": {
+            "type": "boolean"
+          },
+          "bruikbaarDakM2": {
+            "type": "number",
+            "format": "double"
+          },
+          "vermogenKwp": {
+            "type": "number",
+            "format": "double"
+          },
+          "opbrengstKwhPerJaar": {
+            "type": "number",
+            "format": "double"
+          },
+          "aannames": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "EnvironmentLookupResponse": {
+        "type": "object",
+        "properties": {
+          "heritage": {
+            "$ref": "#/components/schemas/HeritageBlock"
+          },
+          "proximity": {
+            "$ref": "#/components/schemas/ProximityBlock"
+          },
+          "climate": {
+            "$ref": "#/components/schemas/ClimateBlock"
+          },
+          "noise": {
+            "$ref": "#/components/schemas/NoiseBlock"
+          }
+        },
+        "additionalProperties": false
+      },
+      "NoiseBlock": {
+        "required": [
+          "note",
+          "sourceAsOf"
+        ],
+        "type": "object",
+        "properties": {
+          "wegverkeerLdenDb": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "klasse": {
+            "type": "string",
+            "nullable": true
+          },
+          "jaar": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "note": {
+            "type": "string",
+            "nullable": true
+          },
+          "sourceAsOf": {
+            "type": "string",
+            "format": "date"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ClimateBlock": {
+        "required": [
+          "layers",
+          "note",
+          "sourceAsOf"
+        ],
+        "type": "object",
+        "properties": {
+          "level": {
+            "type": "string",
+            "nullable": true
+          },
+          "note": {
+            "type": "string",
+            "nullable": true
+          },
+          "funderingsrisico": {
+            "$ref": "#/components/schemas/FoundationRisk"
+          },
+          "hittestress": {
+            "$ref": "#/components/schemas/HeatStress"
+          },
+          "sourceAsOf": {
+            "type": "string",
+            "format": "date"
+          },
+          "layers": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "HeatStress": {
+        "type": "object",
+        "properties": {
+          "gevoelstemperatuurC": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "klasse": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "label": {
+            "type": "string",
+            "nullable": true
+          },
+          "jaar": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "FoundationRisk": {
+        "required": [
+          "kaartBuurtcode",
+          "match"
+        ],
+        "type": "object",
+        "properties": {
+          "kaartBuurtcode": {
+            "type": "string",
+            "nullable": true
+          },
+          "kaartBuurtnaam": {
+            "type": "string",
+            "nullable": true
+          },
+          "match": {
+            "type": "string",
+            "nullable": true
+          },
+          "paalrotHuidig": {
+            "$ref": "#/components/schemas/RiskScore"
+          },
+          "paalrot2050Hoog": {
+            "$ref": "#/components/schemas/RiskScore"
+          },
+          "verschilzetting2050Laag": {
+            "$ref": "#/components/schemas/RiskScore"
+          },
+          "verschilzetting2050Hoog": {
+            "$ref": "#/components/schemas/RiskScore"
+          }
+        },
+        "additionalProperties": false
+      },
+      "RiskScore": {
+        "required": [
+          "klasse",
+          "score"
+        ],
+        "type": "object",
+        "properties": {
+          "score": {
+            "type": "number",
+            "format": "double"
+          },
+          "klasse": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ProximityBlock": {
+        "required": [
+          "buurtFallbackFields",
+          "distancesKm",
+          "level",
+          "peiljaar"
+        ],
+        "type": "object",
+        "properties": {
+          "level": {
+            "type": "string",
+            "nullable": true
+          },
+          "cellId": {
+            "type": "string",
+            "nullable": true
+          },
+          "buurtcode": {
+            "type": "string",
+            "nullable": true
+          },
+          "peiljaar": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "buurtFallbackFields": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "distancesKm": {
+            "$ref": "#/components/schemas/ProximityDistances"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ProximityDistances": {
+        "type": "object",
+        "properties": {
+          "huisartsenpraktijk": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "huisartsenpost": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "apotheek": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "ziekenhuis": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "groteSupermarkt": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "dagelijkseLevensmiddelen": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "kinderdagverblijf": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "buitenschoolseOpvang": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "basisonderwijs": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "voortgezetOnderwijs": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "opritHoofdverkeersweg": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "treinstation": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "overstapstation": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "bibliotheek": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "brandweerkazerne": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "HeritageBlock": {
+        "required": [
+          "inBeschermdGezicht",
+          "isRijksmonument",
+          "rijksmonumentnummers",
+          "sourceAsOf"
+        ],
+        "type": "object",
+        "properties": {
+          "sourceAsOf": {
+            "type": "string",
+            "format": "date"
+          },
+          "isRijksmonument": {
+            "type": "boolean"
+          },
+          "rijksmonumentnummer": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "rijksmonumentnummers": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "nullable": true
+          },
+          "monumentMatch": {
+            "type": "string",
+            "nullable": true
+          },
+          "inBeschermdGezicht": {
+            "type": "boolean"
+          },
+          "beschermdGezichtNaam": {
+            "type": "string",
+            "nullable": true
+          },
+          "beschermdGezichtNummer": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "beschermdGezichtTypologie": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "NeighbourhoodLookupResponse": {
+        "type": "object",
+        "properties": {
+          "neighbourhood": {
+            "$ref": "#/components/schemas/NeighbourhoodBlock"
+          }
+        },
+        "additionalProperties": false
+      },
+      "NeighbourhoodBlock": {
+        "required": [
+          "buurtcode",
+          "gemeentecode",
+          "gemeentenaam",
+          "keyFigures",
+          "sourceAsOf",
+          "wijkcode"
+        ],
+        "type": "object",
+        "properties": {
+          "sourceAsOf": {
+            "type": "string",
+            "format": "date"
+          },
+          "buurtcode": {
+            "type": "string",
+            "nullable": true
+          },
+          "wijkcode": {
+            "type": "string",
+            "nullable": true
+          },
+          "wijknaam": {
+            "type": "string",
+            "nullable": true
+          },
+          "buurtnaam": {
+            "type": "string",
+            "nullable": true
+          },
+          "gemeentecode": {
+            "type": "string",
+            "nullable": true
+          },
+          "gemeentenaam": {
+            "type": "string",
+            "nullable": true
+          },
+          "administrative": {
+            "$ref": "#/components/schemas/NeighbourhoodAdministrative"
+          },
+          "keyFigures": {
+            "type": "object",
+            "additionalProperties": {},
+            "nullable": true
+          },
+          "gemiddeldeWozWaardeEur": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true
+          },
+          "wozPeiljaar": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "wozWaardepeildatum": {
+            "type": "string",
+            "format": "date",
+            "nullable": true
+          },
+          "statistics": {
+            "$ref": "#/components/schemas/NeighbourhoodStatisticsBlock"
+          },
+          "buurtWoz": {
+            "$ref": "#/components/schemas/BuurtWozBlock"
+          }
+        },
+        "additionalProperties": false
+      },
+      "BuurtWozBlock": {
+        "required": [
+          "series"
+        ],
+        "type": "object",
+        "properties": {
+          "series": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BuurtWozYearValue"
+            },
+            "nullable": true
+          },
+          "growth": {
+            "$ref": "#/components/schemas/BuurtWozGrowth"
+          }
+        },
+        "additionalProperties": false
+      },
+      "BuurtWozGrowth": {
+        "type": "object",
+        "properties": {
+          "oneYearPercent": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "threeYearPercent": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "fiveYearPercent": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "cagrPercent": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "BuurtWozYearValue": {
+        "required": [
+          "comparable",
+          "peiljaar",
+          "waardepeildatum"
+        ],
+        "type": "object",
+        "properties": {
+          "peiljaar": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "gemiddeldeWozWaardeEur": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true
+          },
+          "waardepeildatum": {
+            "type": "string",
+            "format": "date"
+          },
+          "comparable": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "NeighbourhoodStatisticsBlock": {
+        "required": [
+          "ageDistribution",
+          "area",
+          "households",
+          "housing",
+          "income",
+          "peiljaar",
+          "population",
+          "provenance"
+        ],
+        "type": "object",
+        "properties": {
+          "peiljaar": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "population": {
+            "$ref": "#/components/schemas/PopulationGroup"
+          },
+          "households": {
+            "$ref": "#/components/schemas/HouseholdsGroup"
+          },
+          "housing": {
+            "$ref": "#/components/schemas/HousingGroup"
+          },
+          "income": {
+            "$ref": "#/components/schemas/IncomeGroup"
+          },
+          "area": {
+            "$ref": "#/components/schemas/AreaGroup"
+          },
+          "ageDistribution": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AgeBand"
+            },
+            "nullable": true
+          },
+          "buildPeriodShares": {
+            "$ref": "#/components/schemas/HousingBuildPeriodShare"
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/NeighbourhoodProvenance"
+          }
+        },
+        "additionalProperties": false
+      },
+      "NeighbourhoodProvenance": {
+        "required": [
+          "datasetSourceAsOf",
+          "peiljaar"
+        ],
+        "type": "object",
+        "properties": {
+          "peiljaar": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "datasetSourceAsOf": {
+            "type": "string",
+            "format": "date"
+          },
+          "sourceUpdatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "boundaryChanged": {
+            "type": "boolean",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "HousingBuildPeriodShare": {
+        "type": "object",
+        "properties": {
+          "builtLast10YearsPercent": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "builtMoreThan10YearsAgoPercent": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "builtUpTo2000Percent": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "builtFrom2000Percent": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "AgeBand": {
+        "required": [
+          "label"
+        ],
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string",
+            "nullable": true
+          },
+          "sharePercent": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "count": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "AreaGroup": {
+        "type": "object",
+        "properties": {
+          "totalAreaHa": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "landAreaHa": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "waterAreaHa": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "totalAreaKm2": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "landAreaKm2": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "waterAreaKm2": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "addressDensity": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "urbanityAddressesPerKm2": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "IncomeGroup": {
+        "type": "object",
+        "properties": {
+          "averageIncomePerResidentEur": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "averageIncomePerRecipientEur": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "standardisedHouseholdIncomeEur": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "medianWealthEur": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "residentsHighIncomePercent": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "residentsLowIncomePercent": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "householdsHighIncomePercent": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "householdsLowIncomePercent": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "householdsLowestIncomePercent": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "householdsAroundSocialMinimumPercent": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "incomeRecipients": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "HousingGroup": {
+        "type": "object",
+        "properties": {
+          "housingStock": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "ownerOccupiedPercent": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "rentalPercent": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "rentalHousingAssociationPercent": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "rentalOtherLandlordPercent": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "averageWozValueEur": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true
+          },
+          "singleFamilyHomesPercent": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "multiFamilyHomesPercent": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "vacancyPercent": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "occupiedPercent": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "unoccupiedPercent": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "detachedHomesPercent": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "semiDetachedHomesPercent": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "terracedHomesPercent": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "cornerHomesPercent": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "gasConnectedHomesPercent": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "gasFreeHomesPercent": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "HouseholdsGroup": {
+        "type": "object",
+        "properties": {
+          "households": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "averageHouseholdSize": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "singlePersonHouseholdsPercent": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "householdsWithChildrenPercent": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "householdsWithoutChildrenPercent": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "carsPerHousehold": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "marriedPercent": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "neverMarriedPercent": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "divorcedPercent": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "widowedPercent": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "PopulationGroup": {
+        "type": "object",
+        "properties": {
+          "residents": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "men": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "women": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "populationDensityPerKm2": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "shareBornInNetherlands": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "shareBornOutsideEurope": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "shareBornInEuropeExNl": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "netLabourParticipationPercent": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "educationLevelLowPercent": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "educationLevelMediumPercent": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "educationLevelHighPercent": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "birthsPer1000Residents": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "birthsTotal": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "deathsTotal": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "NeighbourhoodAdministrative": {
+        "type": "object",
+        "properties": {
+          "provincienaam": {
+            "type": "string",
+            "nullable": true
+          },
+          "provinciecode": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "PlotLookupResponse": {
+        "type": "object",
+        "properties": {
+          "plot": {
+            "$ref": "#/components/schemas/PlotBlock"
+          }
+        },
+        "additionalProperties": false
+      },
+      "PlotBlock": {
+        "required": [
+          "note",
+          "sourceAsOf"
+        ],
+        "type": "object",
+        "properties": {
+          "oppervlakteM2": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "verblijfsobjectenOpPerceel": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "meerdereVerblijfsobjecten": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "note": {
+            "type": "string",
+            "nullable": true
+          },
+          "sourceAsOf": {
+            "type": "string",
+            "format": "date"
+          }
+        },
+        "additionalProperties": false
+      },
+      "EnergyLookupResponse": {
+        "type": "object",
+        "properties": {
+          "energyLabel": {
+            "$ref": "#/components/schemas/EnergyLabelBlock"
+          },
+          "history": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EnergyLabelBlock"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "EnergyLabelBlock": {
+        "required": [
+          "sourceAsOf"
+        ],
+        "type": "object",
+        "properties": {
+          "sourceAsOf": {
+            "type": "string",
+            "format": "date"
+          },
+          "sourceUpdatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "registrationId": {
+            "type": "string",
+            "nullable": true
+          },
+          "bagVerblijfsobjectId": {
+            "type": "string",
+            "nullable": true
+          },
+          "bagPandId": {
+            "type": "string",
+            "nullable": true
+          },
+          "labelClass": {
+            "type": "string",
+            "nullable": true
+          },
+          "recordingDate": {
+            "type": "string",
+            "format": "date",
+            "nullable": true
+          },
+          "registrationDate": {
+            "type": "string",
+            "format": "date",
+            "nullable": true
+          },
+          "validUntil": {
+            "type": "string",
+            "format": "date",
+            "nullable": true
+          },
+          "validFrom": {
+            "type": "string",
+            "format": "date",
+            "nullable": true
+          },
+          "validTo": {
+            "type": "string",
+            "format": "date",
+            "nullable": true
+          },
+          "energyIndex": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "calculationMethod": {
+            "type": "string",
+            "nullable": true
+          },
+          "buildingType": {
+            "type": "string",
+            "nullable": true
+          },
+          "constructionYear": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "ep1KwhM2Yr": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "ep2PrimaryFossilKwhM2Yr": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "ep3RenewableSharePct": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "beng": {
+            "$ref": "#/components/schemas/BengIndicatorsBlock"
+          }
+        },
+        "additionalProperties": false
+      },
+      "BengIndicatorsBlock": {
+        "type": "object",
+        "properties": {
+          "energyNeed": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "primaryFossilEnergy": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "renewableSharePct": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "BuildingLookupResponse": {
+        "type": "object",
+        "properties": {
+          "bag": {
+            "$ref": "#/components/schemas/BagBlock"
+          },
+          "building3d": {
+            "$ref": "#/components/schemas/Building3dBlock"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Building3dBlock": {
+        "required": [
+          "sourceAsOf"
+        ],
+        "type": "object",
+        "properties": {
+          "dakType": {
+            "type": "string",
+            "nullable": true
+          },
+          "maaiveldNapM": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "dakHoogteMaxNapM": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "dakHoogteMediaanNapM": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "nokHoogteNapM": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "gebouwHoogteM": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "dakOppervlakPlatM2": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "dakOppervlakSchuinM2": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "volumeM3": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "zonnepanelen": {
+            "$ref": "#/components/schemas/SolarPotential"
+          },
+          "versie": {
+            "type": "string",
+            "nullable": true
+          },
+          "sourceAsOf": {
+            "type": "string",
+            "format": "date"
+          }
+        },
+        "additionalProperties": false
+      },
+      "BagBlock": {
+        "required": [
+          "sourceAsOf",
+          "verblijfsobject"
+        ],
+        "type": "object",
+        "properties": {
+          "sourceAsOf": {
+            "type": "string",
+            "format": "date"
+          },
+          "verblijfsobject": {
+            "$ref": "#/components/schemas/VerblijfsobjectDto"
+          },
+          "pand": {
+            "$ref": "#/components/schemas/PandDto"
+          }
+        },
+        "additionalProperties": false
+      },
+      "PandDto": {
+        "required": [
+          "identificatie"
+        ],
+        "type": "object",
+        "properties": {
+          "identificatie": {
+            "type": "string",
+            "nullable": true
+          },
+          "bouwjaar": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "nullable": true
+          },
+          "footprintGeoJson": {},
+          "footprintAreaM2": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "VerblijfsobjectDto": {
+        "required": [
+          "identificatie"
+        ],
+        "type": "object",
+        "properties": {
+          "identificatie": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "nullable": true
+          },
+          "gebruiksdoel": {
+            "type": "string",
+            "nullable": true
+          },
+          "oppervlakteM2": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "openbareRuimteNaam": {
+            "type": "string",
+            "nullable": true
+          },
+          "woonplaatsNaam": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ApiErrorResponse": {
+        "required": [
+          "error"
+        ],
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "nullable": true
+          },
+          "message": {
+            "type": "string",
+            "nullable": true
+          },
+          "candidates": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AddressUnitCandidate"
+            },
+            "nullable": true
+          },
+          "signupUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "docsUrl": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "AddressUnitCandidate": {
+        "type": "object",
+        "properties": {
+          "huisletter": {
+            "type": "string",
+            "nullable": true
+          },
+          "toevoeging": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "AddressEnrichmentResponse": {
+        "required": [
+          "address"
+        ],
+        "type": "object",
+        "properties": {
+          "address": {
+            "$ref": "#/components/schemas/AddressRef"
+          },
+          "bag": {
+            "$ref": "#/components/schemas/BagBlock"
+          },
+          "energyLabel": {
+            "$ref": "#/components/schemas/EnergyLabelBlock"
+          },
+          "energyLabelHistory": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EnergyLabelBlock"
+            },
+            "nullable": true
+          },
+          "neighbourhood": {
+            "$ref": "#/components/schemas/NeighbourhoodBlock"
+          },
+          "heritage": {
+            "$ref": "#/components/schemas/HeritageBlock"
+          },
+          "proximity": {
+            "$ref": "#/components/schemas/ProximityBlock"
+          },
+          "climate": {
+            "$ref": "#/components/schemas/ClimateBlock"
+          },
+          "noise": {
+            "$ref": "#/components/schemas/NoiseBlock"
+          },
+          "plot": {
+            "$ref": "#/components/schemas/PlotBlock"
+          },
+          "building3d": {
+            "$ref": "#/components/schemas/Building3dBlock"
+          },
+          "derived": {
+            "$ref": "#/components/schemas/PropertyDerivedIntelligence"
+          }
+        },
+        "additionalProperties": false
+      },
+      "PropertyDerivedIntelligence": {
+        "type": "object",
+        "properties": {
+          "property": {
+            "$ref": "#/components/schemas/PropertyIntelligencePropertyBlock"
+          },
+          "woz": {
+            "$ref": "#/components/schemas/WozIntelligenceBlock"
+          },
+          "energy": {
+            "$ref": "#/components/schemas/EnergyIntelligenceBlock"
+          },
+          "neighbourhood": {
+            "$ref": "#/components/schemas/NeighbourhoodIntelligenceBlock"
+          },
+          "legacyMetrics": {
+            "$ref": "#/components/schemas/DerivedLegacyMetricsBlock"
+          }
+        },
+        "additionalProperties": false
+      },
+      "DerivedLegacyMetricsBlock": {
+        "type": "object",
+        "properties": {
+          "buildingAgeYears": {
+            "$ref": "#/components/schemas/Int32IntelligenceValue"
+          },
+          "parcelUtilisationRatio": {
+            "$ref": "#/components/schemas/DecimalIntelligenceValue"
+          },
+          "buildingHeightM": {
+            "$ref": "#/components/schemas/DecimalIntelligenceValue"
+          },
+          "buildingVolumeM3": {
+            "$ref": "#/components/schemas/DecimalIntelligenceValue"
+          },
+          "energyLabelScore": {
+            "$ref": "#/components/schemas/DecimalIntelligenceValue"
+          }
+        },
+        "additionalProperties": false
+      },
+      "DecimalIntelligenceValue": {
+        "required": [
+          "calculatedAt",
+          "kind",
+          "methodologyId",
+          "methodologyVersion",
+          "status"
+        ],
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "number",
+            "format": "double"
+          },
+          "unit": {
+            "type": "string",
+            "nullable": true
+          },
+          "kind": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "nullable": true
+          },
+          "missingInputs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "confidence": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "confidenceBand": {
+            "type": "string",
+            "nullable": true
+          },
+          "methodologyId": {
+            "type": "string",
+            "nullable": true
+          },
+          "methodologyVersion": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "calculatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "sourceObservationDate": {
+            "type": "string",
+            "format": "date",
+            "nullable": true
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/IntelligenceProvenance"
+          }
+        },
+        "additionalProperties": false
+      },
+      "IntelligenceProvenance": {
+        "required": [
+          "calculatedAt",
+          "methodologyId",
+          "methodologyVersion",
+          "sources"
+        ],
+        "type": "object",
+        "properties": {
+          "sources": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/IntelligenceSourceRef"
+            },
+            "nullable": true
+          },
+          "methodologyId": {
+            "type": "string",
+            "nullable": true
+          },
+          "methodologyVersion": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "calculatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false
+      },
+      "IntelligenceSourceRef": {
+        "required": [
+          "dataset"
+        ],
+        "type": "object",
+        "properties": {
+          "dataset": {
+            "type": "string",
+            "nullable": true
+          },
+          "observationYear": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Int32IntelligenceValue": {
+        "required": [
+          "calculatedAt",
+          "kind",
+          "methodologyId",
+          "methodologyVersion",
+          "status"
+        ],
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "unit": {
+            "type": "string",
+            "nullable": true
+          },
+          "kind": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "nullable": true
+          },
+          "missingInputs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "confidence": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "confidenceBand": {
+            "type": "string",
+            "nullable": true
+          },
+          "methodologyId": {
+            "type": "string",
+            "nullable": true
+          },
+          "methodologyVersion": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "calculatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "sourceObservationDate": {
+            "type": "string",
+            "format": "date",
+            "nullable": true
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/IntelligenceProvenance"
+          }
+        },
+        "additionalProperties": false
+      },
+      "NeighbourhoodIntelligenceBlock": {
+        "required": [
+          "comparisonPopulationBuurt",
+          "comparisonPopulationNational"
+        ],
+        "type": "object",
+        "properties": {
+          "populationDensityPerKm2": {
+            "$ref": "#/components/schemas/DecimalIntelligenceValue"
+          },
+          "densityClassification": {
+            "$ref": "#/components/schemas/StringIntelligenceValue"
+          },
+          "densityNationalPercentile": {
+            "$ref": "#/components/schemas/DecimalIntelligenceValue"
+          },
+          "averageWozValueEur": {
+            "$ref": "#/components/schemas/Int64IntelligenceValue"
+          },
+          "ownerOccupiedPercent": {
+            "$ref": "#/components/schemas/DecimalIntelligenceValue"
+          },
+          "rentalPercent": {
+            "$ref": "#/components/schemas/DecimalIntelligenceValue"
+          },
+          "singleFamilyPercent": {
+            "$ref": "#/components/schemas/DecimalIntelligenceValue"
+          },
+          "multiFamilyPercent": {
+            "$ref": "#/components/schemas/DecimalIntelligenceValue"
+          },
+          "housingClassification": {
+            "$ref": "#/components/schemas/StringIntelligenceValue"
+          },
+          "profile": {
+            "$ref": "#/components/schemas/NeighbourhoodProfileSummary"
+          },
+          "comparisonPopulationBuurt": {
+            "type": "string",
+            "nullable": true
+          },
+          "comparisonPopulationNational": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "NeighbourhoodProfileSummary": {
+        "required": [
+          "buurtcode"
+        ],
+        "type": "object",
+        "properties": {
+          "buurtcode": {
+            "type": "string",
+            "nullable": true
+          },
+          "peiljaar": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "populationDensityPerKm2": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "ownerOccupiedPercent": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "rentalPercent": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "singleFamilyPercent": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "multiFamilyPercent": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "averageWozValueEur": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Int64IntelligenceValue": {
+        "required": [
+          "calculatedAt",
+          "kind",
+          "methodologyId",
+          "methodologyVersion",
+          "status"
+        ],
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "unit": {
+            "type": "string",
+            "nullable": true
+          },
+          "kind": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "nullable": true
+          },
+          "missingInputs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "confidence": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "confidenceBand": {
+            "type": "string",
+            "nullable": true
+          },
+          "methodologyId": {
+            "type": "string",
+            "nullable": true
+          },
+          "methodologyVersion": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "calculatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "sourceObservationDate": {
+            "type": "string",
+            "format": "date",
+            "nullable": true
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/IntelligenceProvenance"
+          }
+        },
+        "additionalProperties": false
+      },
+      "StringIntelligenceValue": {
+        "required": [
+          "calculatedAt",
+          "kind",
+          "methodologyId",
+          "methodologyVersion",
+          "status"
+        ],
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "string",
+            "nullable": true
+          },
+          "unit": {
+            "type": "string",
+            "nullable": true
+          },
+          "kind": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "nullable": true
+          },
+          "missingInputs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "confidence": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "confidenceBand": {
+            "type": "string",
+            "nullable": true
+          },
+          "methodologyId": {
+            "type": "string",
+            "nullable": true
+          },
+          "methodologyVersion": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "calculatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "sourceObservationDate": {
+            "type": "string",
+            "format": "date",
+            "nullable": true
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/IntelligenceProvenance"
+          }
+        },
+        "additionalProperties": false
+      },
+      "EnergyIntelligenceBlock": {
+        "type": "object",
+        "properties": {
+          "labelClass": {
+            "$ref": "#/components/schemas/StringIntelligenceValue"
+          },
+          "pandlensNormalizedEnergyScore": {
+            "$ref": "#/components/schemas/DecimalIntelligenceValue"
+          },
+          "relativeToNeighbourhood": {
+            "$ref": "#/components/schemas/EnergyNeighbourhoodComparisonBlock"
+          }
+        },
+        "additionalProperties": false
+      },
+      "EnergyNeighbourhoodComparisonBlock": {
+        "required": [
+          "comparisonPopulation",
+          "status"
+        ],
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "nullable": true
+          },
+          "comparisonPopulation": {
+            "type": "string",
+            "nullable": true
+          },
+          "medianLabelClass": {
+            "type": "string",
+            "nullable": true
+          },
+          "betterThanPercentage": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "labelDistribution": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "nullable": true
+          },
+          "sampleSize": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "WozIntelligenceBlock": {
+        "required": [
+          "comparisonPopulation"
+        ],
+        "type": "object",
+        "properties": {
+          "propertyWozValueEur": {
+            "$ref": "#/components/schemas/Int64IntelligenceValue"
+          },
+          "propertyWozPerM2Eur": {
+            "$ref": "#/components/schemas/DecimalIntelligenceValue"
+          },
+          "buurtHistory": {
+            "$ref": "#/components/schemas/BuurtWozBlock"
+          },
+          "buurtYoYPercent": {
+            "$ref": "#/components/schemas/DecimalIntelligenceValue"
+          },
+          "buurtThreeYearPercent": {
+            "$ref": "#/components/schemas/DecimalIntelligenceValue"
+          },
+          "buurtFiveYearPercent": {
+            "$ref": "#/components/schemas/DecimalIntelligenceValue"
+          },
+          "buurtCagrPercent": {
+            "$ref": "#/components/schemas/DecimalIntelligenceValue"
+          },
+          "buurtWozPerM2Eur": {
+            "$ref": "#/components/schemas/DecimalIntelligenceValue"
+          },
+          "comparisonPopulation": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "PropertyIntelligencePropertyBlock": {
+        "type": "object",
+        "properties": {
+          "ageYears": {
+            "$ref": "#/components/schemas/Int32IntelligenceValue"
+          },
+          "constructionDecade": {
+            "$ref": "#/components/schemas/Int32IntelligenceValue"
+          },
+          "ageCategory": {
+            "$ref": "#/components/schemas/StringIntelligenceValue"
+          },
+          "buildYearBuurtPercentile": {
+            "$ref": "#/components/schemas/DecimalIntelligenceValue"
+          }
+        },
+        "additionalProperties": false
+      },
+      "AddressRef": {
+        "required": [
+          "huisnummer",
+          "postcode"
+        ],
+        "type": "object",
+        "properties": {
+          "postcode": {
+            "type": "string",
+            "nullable": true
+          },
+          "huisnummer": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "huisletter": {
+            "type": "string",
+            "nullable": true
+          },
+          "toevoeging": {
+            "type": "string",
+            "nullable": true
+          },
+          "straat": {
+            "type": "string",
+            "nullable": true
+          },
+          "woonplaats": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "security": [
+    {
+      "ApiKey": []
+    }
+  ]
+}

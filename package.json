@@ -3,7 +3,8 @@
   "private": true,
   "description": "Pandlens Zapier and n8n integration packages",
   "scripts": {
-    "lint": "eslint . --max-warnings=0 --ignore-pattern '**/node_modules/**' --ignore-pattern '**/dist/**' --ignore-pattern '**/*.tgz'"
+    "lint": "eslint . --max-warnings=0 --ignore-pattern '**/node_modules/**' --ignore-pattern '**/dist/**' --ignore-pattern '**/*.tgz'",
+    "regenerate:gpt-openapi": "node scripts/regenerate-gpt-openapi.cjs"
   },
   "devDependencies": {
     "eslint": "^8.57.0"

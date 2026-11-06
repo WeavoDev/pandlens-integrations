@@ -1,0 +1,6 @@
+{
+  "$schema": "https://glama.ai/mcp/schemas/server.json",
+  "maintainers": [
+    "REPLACE_WITH_DAAN_GITHUB_USERNAME"
+  ]
+}

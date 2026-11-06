@@ -12,6 +12,7 @@ Pandlens is a property intelligence API for Dutch addresses. Each action looks u
 | [`n8n/`](n8n/) | Community node package **`n8n-nodes-pandlens`** plus an HTTP Request workflow template |
 | [`wordpress/pandlens-adresgegevens/`](wordpress/pandlens-adresgegevens/) | WordPress plugin (GPL-2.0-or-later) for form address autofill and property card block |
 | [`widget/`](widget/) | Embeddable property card (`<pandlens-card>`, publishable widget key) |
+| [`ai/`](ai/) | AI marketplace listing packs (MCP, OpenAI, Claude): copy, `server.json`, trimmed OpenAPI for GPT Actions |
 | [`docs/`](docs/) | End-user help ([English](docs/help-en.md)), [widget key API spec](docs/widget-key-spec.md) |
 | [`fixtures/`](fixtures/) | Recorded JSON responses for CI (no live API key in tests) |
 

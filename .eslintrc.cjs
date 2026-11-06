@@ -12,6 +12,7 @@ module.exports = {
     'wordpress/',
     'widget/dist/',
     'zapier/node_modules/',
+    'ai/**/*.json',
   ],
   overrides: [
     {
