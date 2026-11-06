@@ -1,0 +1,26 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/v1/server-card.schema.json",
+  "name": "nl.pandlens/mcp",
+  "title": "Pandlens",
+  "description": "Dutch pand facts per address in one call; MCP streamable HTTP for AI agents.",
+  "version": "1.0.0",
+  "websiteUrl": "https://pandlens.nl/docs",
+  "repository": {
+    "url": "https://github.com/WeavoDev/pandlens-integrations",
+    "source": "github"
+  },
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://api.pandlens.com/mcp",
+      "headers": [
+        {
+          "name": "X-Api-Key",
+          "description": "Customer Pandlens API key (same header as REST).",
+          "isRequired": true,
+          "isSecret": true
+        }
+      ]
+    }
+  ]
+}
