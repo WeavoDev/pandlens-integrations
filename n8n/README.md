@@ -23,6 +23,10 @@ Settings → Community nodes → Install `n8n-nodes-pandlens`.
 
 Import [`templates/pandlens-http-address-lookup.workflow.json`](templates/pandlens-http-address-lookup.workflow.json) if you prefer the built-in HTTP Request node.
 
+For CRM quoting, import [`templates/pandlens-crm-webhook-enrich.workflow.json`](templates/pandlens-crm-webhook-enrich.workflow.json) (see [`../crm/README.md`](../crm/README.md)).
+
+Neighbourhood fields use **Statistics Netherlands (CBS)** data under **CC BY 4.0**.
+
 ## Development
 
 ```bash

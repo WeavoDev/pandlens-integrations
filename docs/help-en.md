@@ -35,6 +35,20 @@ Create an **Header Auth** credential:
 
 Replace the sample postcode and house number in the **Sample address** node, or feed rows from a spreadsheet (one row = one lookup).
 
+### CRM webhook template
+
+Import `n8n/templates/pandlens-crm-webhook-enrich.workflow.json` for a `POST` webhook that returns Pandlens JSON to your CRM. See [../crm/README.md](../crm/README.md).
+
+## Google Sheets
+
+Custom function add-on (not on the Google Workspace Marketplace from this repo):
+
+1. Install the Apps Script project from [../google-sheets/README.md](../google-sheets/README.md) (`clasp push` or paste the `.gs` files).
+2. **Pandlens** menu → **Set API key…** (stored in your user properties).
+3. In a cell: `=PANDLENS("6101DB", 19, "energyLabel_labelClass")` (use `;` instead of `,` in Dutch locale spreadsheets).
+
+Each formula evaluates **one** address. Copying the formula to more rows is normal; identical addresses reuse the spreadsheet cache. Neighbourhood fields use **CBS** data under **CC BY 4.0**.
+
 ## Limits and errors
 
 | HTTP status | Meaning | What to do |
