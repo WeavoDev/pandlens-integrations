@@ -1,0 +1,63 @@
+{
+  "name": "Pandlens CRM webhook enrich",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "pandlens-enrich",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook",
+      "name": "CRM webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 300],
+      "webhookId": "pandlens-enrich"
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "=https://api.pandlens.nl/v1/address/{{ $json.postcode.replace(/\\s/g, '').toUpperCase() }}/{{ $json.huisnummer }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "id": "http-request",
+      "name": "Pandlens enrich address",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [520, 300],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "REPLACE_WITH_CREDENTIAL_ID",
+          "name": "Pandlens API key"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {}
+      },
+      "id": "respond",
+      "name": "Respond to CRM",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [760, 300]
+    }
+  ],
+  "connections": {
+    "CRM webhook": {
+      "main": [[{ "node": "Pandlens enrich address", "type": "main", "index": 0 }]]
+    },
+    "Pandlens enrich address": {
+      "main": [[{ "node": "Respond to CRM", "type": "main", "index": 0 }]]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": false
+  }
+}
